@@ -17,13 +17,13 @@ public class LoginScreen extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.login_screen);
 
-        Button skipSignUp = (Button) findViewById(R.id.skip_sign_up_button);
-        skipSignUp.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent intent = new Intent(LoginScreen.this, HomeScreenActivity.class);
-                startActivity(intent);
-            }
-        });
+//        Button skipSignUp = (Button) findViewById(R.id.skip_sign_up_button);
+//        skipSignUp.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View view) {
+//                Intent intent = new Intent(LoginScreen.this, HomeScreenActivity.class);
+//                startActivity(intent);
+//            }
+//        });
     }
 }
