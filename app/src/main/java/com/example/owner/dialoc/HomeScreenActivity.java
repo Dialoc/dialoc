@@ -3,6 +3,7 @@ package com.example.owner.dialoc;
 import android.*;
 import android.Manifest;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.location.Location;
@@ -40,6 +41,7 @@ import com.google.android.gms.maps.OnStreetViewPanoramaReadyCallback;
 import com.google.android.gms.maps.StreetViewPanorama;
 import com.google.android.gms.maps.StreetViewPanoramaFragment;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.firebase.auth.FirebaseAuth;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -114,8 +116,10 @@ public class HomeScreenActivity extends AppCompatActivity {
                     fragmentTransaction.replace(R.id.containerView, new TabFragment()).commit();
                 }
                 if (item.getItemId() == R.id.nav_logout) {
-                    FragmentTransaction fragmentTransaction = mFragmentManager.beginTransaction();
-                    fragmentTransaction.replace(R.id.containerView, new TabFragment()).commit();
+                    FirebaseAuth.getInstance().signOut();
+                    Intent loginScreen = new Intent(HomeScreenActivity.this, LoginScreen.class);
+                    startActivity(loginScreen);
+                    finish();
                 }
 
                 return false;

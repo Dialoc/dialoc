@@ -18,9 +18,6 @@ import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 
-/**
- * Created by Owner on 4/18/2017.
- */
 
 public class LoginScreen extends AppCompatActivity {
 
@@ -43,8 +40,8 @@ public class LoginScreen extends AppCompatActivity {
         FirebaseUser currentUser = mAuth.getCurrentUser();
         if (currentUser != null) {
             mAuth.signOut();
-//            startActivity(homeScreenIntent);
-//            finish();
+            startActivity(homeScreenIntent);
+            finish();
         }
     }
 
