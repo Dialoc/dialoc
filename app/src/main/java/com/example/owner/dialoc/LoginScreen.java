@@ -12,11 +12,19 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 
+import com.facebook.CallbackManager;
+import com.facebook.FacebookCallback;
+import com.facebook.FacebookException;
+import com.facebook.login.LoginManager;
+import com.facebook.login.LoginResult;
+import com.facebook.login.widget.LoginButton;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.facebook.FacebookSdk;
+import com.facebook.appevents.AppEventsLogger;
 
 
 public class LoginScreen extends AppCompatActivity {
@@ -30,13 +38,18 @@ public class LoginScreen extends AppCompatActivity {
     private Button registerButton;
     private FirebaseAuth mAuth;
     private TextView skip_text;
+    private FirebaseAuth.AuthStateListener mAuthListener;
+    private CallbackManager mCallbackManager = CallbackManager.Factory.create();
+    private LoginButton fbLoginButton = (LoginButton) findViewById(R.id.fb_login_button);
 
 
     @Override
     public void onStart() {
+        Log.w(TAG, "signInWithFacebook:cancelled");
         super.onStart();
         // Check if user is signed in (non-null) and update UI accordingly.
         mAuth = FirebaseAuth.getInstance();
+        mAuth.addAuthStateListener(mAuthListener);
         FirebaseUser currentUser = mAuth.getCurrentUser();
         if (currentUser != null) {
             mAuth.signOut();
@@ -88,6 +101,32 @@ public class LoginScreen extends AppCompatActivity {
                 }
             }
         });
+
+
+        // Callback registration
+        fbLoginButton.registerCallback(mCallbackManager, new FacebookCallback<LoginResult>() {
+            @Override
+            public void onSuccess(LoginResult loginResult) {
+                startActivity(homeScreenIntent);
+                finish();
+            }
+
+            @Override
+            public void onCancel() {
+                //Snackbar.make(v, "Facebook Authentication Cancelled", Snackbar.LENGTH_SHORT).show();
+                Log.w(TAG, "signInWithFacebook:cancelled");
+
+            }
+
+            @Override
+            public void onError(FacebookException exception) {
+                Log.w(TAG, "signInWithFacebook:failure", exception);
+                //Snackbar.make(v, "Facebook Authentication Failed", Snackbar.LENGTH_SHORT).show();
+            }
+        });
+
+
+
 
 
         skip_text.setOnClickListener(new View.OnClickListener() {
