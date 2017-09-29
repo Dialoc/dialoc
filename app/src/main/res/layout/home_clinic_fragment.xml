@@ -9,7 +9,6 @@
         android:orientation="vertical">
         <com.google.android.gms.maps.StreetViewPanoramaView
             xmlns:android="http://schemas.android.com/apk/res/android"
-            android:name="com.google.android.gms.maps.StreetViewPanoramaFragment"
             android:layout_width="match_parent"
             android:layout_height="0dp"
             android:layout_weight=".5"
