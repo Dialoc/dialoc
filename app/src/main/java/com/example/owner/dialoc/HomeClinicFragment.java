@@ -1,11 +1,8 @@
 package com.example.owner.dialoc;
 
-import android.*;
 import android.content.DialogInterface;
 import android.content.pm.PackageManager;
-import android.graphics.Bitmap;
 import android.location.Location;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -13,6 +10,7 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -23,22 +21,21 @@ import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
-import com.android.volley.toolbox.Volley;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.location.LocationServices;
-import com.google.android.gms.location.places.PlacePhotoMetadata;
-import com.google.android.gms.location.places.PlacePhotoMetadataBuffer;
-import com.google.android.gms.location.places.PlacePhotoMetadataResult;
+import com.google.android.gms.location.places.GeoDataClient;
+import com.google.android.gms.location.places.Place;
+import com.google.android.gms.location.places.PlaceBufferResponse;
+import com.google.android.gms.location.places.PlaceDetectionClient;
 import com.google.android.gms.location.places.Places;
-import com.google.android.gms.maps.MapsInitializer;
 import com.google.android.gms.maps.OnStreetViewPanoramaReadyCallback;
 import com.google.android.gms.maps.StreetViewPanorama;
 import com.google.android.gms.maps.StreetViewPanoramaFragment;
-import com.google.android.gms.maps.StreetViewPanoramaOptions;
 import com.google.android.gms.maps.StreetViewPanoramaView;
-import com.google.android.gms.maps.SupportStreetViewPanoramaFragment;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -57,6 +54,7 @@ public class HomeClinicFragment extends Fragment implements GoogleApiClient.OnCo
     private RequestQueue queue;
     private StreetViewPanoramaView streetViewPanorama;
     private StreetViewPanorama mStreetViewPanoramaMap;
+    private StreetViewPanoramaView mStreetViewPanoramaView;
 
     // Objects on screen
     private TextView dialysisClinicName;
@@ -64,51 +62,40 @@ public class HomeClinicFragment extends Fragment implements GoogleApiClient.OnCo
     private TextView dialysisClinicWebsite;
     private TextView dialysisClinicWebsiteUrl;
     private TextView dialysisClinicWebsiteNA;
+    private static final String TAG = "HomeClinicFragment";
+    private static final LatLng SYDNEY = new LatLng(-33.87365, 151.20689);
+    private static final String STREETVIEW_BUNDLE_KEY = "StreetViewBundleKey";
+    private GeoDataClient mGeoDataClient;
+    private PlaceDetectionClient mPlaceDetectionClient;
 
 
-    public HomeClinicFragment() {}
-
-    @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
+    public HomeClinicFragment() {
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.home_clinic_fragment, container, false);
-
-        mGoogleApiClient = new GoogleApiClient.Builder(getContext())
-                .addApi(Places.GEO_DATA_API)
-                .addApi(Places.PLACE_DETECTION_API)
-                .addConnectionCallbacks(this)
-                .addOnConnectionFailedListener(this)
-                .addApi(LocationServices.API)
-                .enableAutoManage(getActivity(), this)
-                .build();
-
-
-        queue = Volley.newRequestQueue(getContext());
-
-        streetViewPanorama = (StreetViewPanoramaView) view.findViewById(R.id.street_view_of_home_clinic);
-        //
-//        streetViewPanorama.onResume();
-        try {
-            MapsInitializer.initialize(getActivity().getApplicationContext());
-        } catch(Exception e) {
-            e.printStackTrace();
+        mStreetViewPanoramaView = (StreetViewPanoramaView) view.findViewById(R.id.street_view_of_home_clinic);
+        // *** IMPORTANT ***
+        // StreetViewPanoramaView requires that the Bundle you pass contain _ONLY_
+        // StreetViewPanoramaView SDK objects or sub-Bundles.
+        Bundle mStreetViewBundle = null;
+        if (savedInstanceState != null) {
+            mStreetViewBundle = savedInstanceState.getBundle(STREETVIEW_BUNDLE_KEY);
         }
-
-//        streetViewPanorama = new StreetViewPanoramaView(getContext(), new StreetViewPanoramaOptions().position(new LatLng(33.7683051,-84.3861525)));
-        streetViewPanorama.onCreate(savedInstanceState);
-
-        streetViewPanorama.getStreetViewPanoramaAsync(new OnStreetViewPanoramaReadyCallback() {
+        mStreetViewPanoramaView.onCreate(mStreetViewBundle);
+        mStreetViewPanoramaView.getStreetViewPanoramaAsync(new OnStreetViewPanoramaReadyCallback() {
             @Override
-            public void onStreetViewPanoramaReady(StreetViewPanorama streetViewPanoramaMap) {
-//                streetViewPanoramaMap.setPosition(new LatLng(33.7669531197085,-84.38812213029149));
-                System.out.println("Set the street view panorama");
-                mStreetViewPanoramaMap = streetViewPanoramaMap;
+            public void onStreetViewPanoramaReady(StreetViewPanorama panorama) {
+                panorama.setPosition(new LatLng(33.771683, -84.406718));
+                mStreetViewPanoramaMap = panorama;
             }
         });
+        // Construct a GeoDataClient.
+        mGeoDataClient = Places.getGeoDataClient(getContext(), null);
+
+        // Construct a PlaceDetectionClient.
+        mPlaceDetectionClient = Places.getPlaceDetectionClient(getContext(), null);
 
 
         dialysisClinicName = (TextView) view.findViewById(R.id.dialysis_clinic_name);
@@ -117,43 +104,58 @@ public class HomeClinicFragment extends Fragment implements GoogleApiClient.OnCo
         dialysisClinicWebsiteUrl = (TextView) view.findViewById(R.id.dialysis_clinic_website_url);
         dialysisClinicWebsiteNA = (TextView) view.findViewById(R.id.dialysis_clinic_website_na);
 
+        if (ActivityCompat.checkSelfPermission(getContext(), android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            checkLocationPermission();
+        }
+        mGeoDataClient.getPlaceById("ChIJ5btcA5AE9YgRFAYcKNHxumU").addOnCompleteListener(new OnCompleteListener<PlaceBufferResponse>() {
+            @Override
+            public void onComplete(@NonNull Task<PlaceBufferResponse> task) {
+                if (task.isSuccessful()) {
+                    PlaceBufferResponse places = task.getResult();
+                    Place myPlace = places.get(0);
+                    dialysisClinicRating.setText(myPlace.getRating() + "/5");
+                    Log.i(TAG, "Place found: " + myPlace.getLatLng());
+                    places.release();
+                } else {
+                    Log.e(TAG, "Place not found.");
+                }
+            }
+        });
+
+
+
         return view;
     }
 
     @Override
-    public void onStart() {
-        mGoogleApiClient.connect();
-        super.onStart();
-    }
-
-    @Override
-    public void onStop() {
-        mGoogleApiClient.disconnect();
-        super.onStop();
-    }
-
-    @Override
     public void onResume() {
-        if (streetViewPanorama != null) {
-            streetViewPanorama.onResume();
-        }
+        mStreetViewPanoramaView.onResume();
         super.onResume();
     }
 
     @Override
     public void onPause() {
-        if (streetViewPanorama != null) {
-            streetViewPanorama.onPause();
-        }
+        mStreetViewPanoramaView.onPause();
         super.onPause();
     }
 
     @Override
     public void onDestroy() {
-        if (streetViewPanorama != null) {
-            streetViewPanorama.onDestroy();
-        }
+        mStreetViewPanoramaView.onDestroy();
         super.onDestroy();
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+
+        Bundle mStreetViewBundle = outState.getBundle(STREETVIEW_BUNDLE_KEY);
+        if (mStreetViewBundle == null) {
+            mStreetViewBundle = new Bundle();
+            outState.putBundle(STREETVIEW_BUNDLE_KEY, mStreetViewBundle);
+        }
+
+        mStreetViewPanoramaView.onSaveInstanceState(mStreetViewBundle);
     }
 
     @Override
