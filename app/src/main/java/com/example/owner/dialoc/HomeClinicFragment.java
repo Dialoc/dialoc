@@ -59,8 +59,8 @@ public class HomeClinicFragment extends Fragment implements GoogleApiClient.OnCo
     // Objects on screen
     private TextView dialysisClinicName;
     private TextView dialysisClinicRating;
-    private TextView dialysisClinicWebsite;
-    private TextView dialysisClinicWebsiteUrl;
+    private TextView dialysisClinicPhone;
+    private TextView dialysisClinicPhoneNumber;
     private TextView dialysisClinicWebsiteNA;
     private static final String TAG = "HomeClinicFragment";
     private static final LatLng SYDNEY = new LatLng(-33.87365, 151.20689);
@@ -100,8 +100,8 @@ public class HomeClinicFragment extends Fragment implements GoogleApiClient.OnCo
 
         dialysisClinicName = (TextView) view.findViewById(R.id.dialysis_clinic_name);
         dialysisClinicRating = (TextView) view.findViewById(R.id.dialysis_clinic_rating);
-        dialysisClinicWebsite = (TextView) view.findViewById(R.id.dialysis_clinic_website);
-        dialysisClinicWebsiteUrl = (TextView) view.findViewById(R.id.dialysis_clinic_website_url);
+        dialysisClinicPhone = (TextView) view.findViewById(R.id.dialysis_clinic_phone);
+        dialysisClinicPhoneNumber = (TextView) view.findViewById(R.id.dialysis_clinic_phone_number);
         dialysisClinicWebsiteNA = (TextView) view.findViewById(R.id.dialysis_clinic_website_na);
 
         if (ActivityCompat.checkSelfPermission(getContext(), android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
@@ -114,6 +114,7 @@ public class HomeClinicFragment extends Fragment implements GoogleApiClient.OnCo
                     PlaceBufferResponse places = task.getResult();
                     Place myPlace = places.get(0);
                     dialysisClinicRating.setText(myPlace.getRating() + "/5");
+                    dialysisClinicPhoneNumber.setText(myPlace.getPhoneNumber());
                     Log.i(TAG, "Place found: " + myPlace.getLatLng());
                     places.release();
                 } else {
@@ -186,7 +187,7 @@ public class HomeClinicFragment extends Fragment implements GoogleApiClient.OnCo
                     System.out.println("Last Location: " + mLastLocation);
                     System.out.println("Last lat: " + mLastLocation.getLatitude());
                     System.out.println("Last long: " + mLastLocation.getLongitude());
-                    requestNearbyDialysisClinic();
+//                    requestNearbyDialysisClinic();
                 }
             }
         }
@@ -259,7 +260,7 @@ public class HomeClinicFragment extends Fragment implements GoogleApiClient.OnCo
                             System.out.println("Last Location: " + mLastLocation);
                             System.out.println("Last lat: " + mLastLocation.getLatitude());
                             System.out.println("Last long: " + mLastLocation.getLongitude());
-                            requestNearbyDialysisClinic();
+//                            requestNearbyDialysisClinic();
                         }
                     }
 
@@ -275,91 +276,91 @@ public class HomeClinicFragment extends Fragment implements GoogleApiClient.OnCo
         }
     }
 
-    public void requestNearbyDialysisClinic() {
-//        String url = "https://maps.googleapis.com/maps/api/place/textsearch/json?query=dialysis&location=" + mLastLocation.getLatitude() + "," + mLastLocation.getLongitude() + "&radius=50000&key=AIzaSyDsErmQAN0ssNz2BZZs2nhL2SalqR_IM7o";
-        String url = "https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=" + mLastLocation.getLatitude() + "," + mLastLocation.getLongitude() + "&rankby=distance&type=doctor&keyword=dialysis&key=" + getString(R.string.google_api_key);
-        System.out.println("Url: " + url);
-        JsonObjectRequest obj = new JsonObjectRequest(Request.Method.GET, url, null, new Response.Listener<JSONObject>() {
-            @Override
-            public void onResponse(JSONObject response) {
-                System.out.println("Response: " + response.toString());
-                try {
-                    JSONArray jsonArray = response.getJSONArray("results");
-                    JSONObject firstPlace = (JSONObject) jsonArray.get(1);
-                    System.out.println("First Place: " + firstPlace);
-                    String placeId = (String) firstPlace.get("place_id");
-//                    JSONArray photos = (JSONArray) firstPlace.get("photos");
-//                    String firstPhotoReference = (String) ((JSONObject) photos.get(0)).get("photo_reference");
-                    System.out.println("Place ID: " + placeId);
-                    getPlaceInfo(placeId);
+//    public void requestNearbyDialysisClinic() {
+////        String url = "https://maps.googleapis.com/maps/api/place/textsearch/json?query=dialysis&location=" + mLastLocation.getLatitude() + "," + mLastLocation.getLongitude() + "&radius=50000&key=AIzaSyDsErmQAN0ssNz2BZZs2nhL2SalqR_IM7o";
+//        String url = "https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=" + mLastLocation.getLatitude() + "," + mLastLocation.getLongitude() + "&rankby=distance&type=doctor&keyword=dialysis&key=" + getString(R.string.google_api_key);
+//        System.out.println("Url: " + url);
+//        JsonObjectRequest obj = new JsonObjectRequest(Request.Method.GET, url, null, new Response.Listener<JSONObject>() {
+//            @Override
+//            public void onResponse(JSONObject response) {
+//                System.out.println("Response: " + response.toString());
+//                try {
+//                    JSONArray jsonArray = response.getJSONArray("results");
+//                    JSONObject firstPlace = (JSONObject) jsonArray.get(1);
+//                    System.out.println("First Place: " + firstPlace);
+//                    String placeId = (String) firstPlace.get("place_id");
+////                    JSONArray photos = (JSONArray) firstPlace.get("photos");
+////                    String firstPhotoReference = (String) ((JSONObject) photos.get(0)).get("photo_reference");
+//                    System.out.println("Place ID: " + placeId);
+//                    getPlaceInfo(placeId);
+//
+//                } catch (JSONException e) {
+//                    e.printStackTrace();
+//                }
+//            }
+//        }, new Response.ErrorListener() {
+//
+//            @Override
+//            public void onErrorResponse(VolleyError error) {
+//                System.out.println("Error: " + error.toString());
+//            }
+//        });
+//        queue.add(obj);
+//    }
 
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
-            }
-        }, new Response.ErrorListener() {
-
-            @Override
-            public void onErrorResponse(VolleyError error) {
-                System.out.println("Error: " + error.toString());
-            }
-        });
-        queue.add(obj);
-    }
-
-    public void getPlaceInfo(String placeId) {
-
-
-        String url = "https://maps.googleapis.com/maps/api/place/details/json?placeid=" + placeId + "&key=" + getString(R.string.google_api_key);
-
-
-        JsonObjectRequest obj = new JsonObjectRequest(Request.Method.GET, url, null, new Response.Listener<JSONObject>() {
-            @Override
-            public void onResponse(JSONObject response) {
-                System.out.println("Specific Place Info: " + response.toString());
-                try {
-                    JSONObject result = (JSONObject) response.get("result");
-
-                    String name = (String) result.get("name");
-                    dialysisClinicName.setText(name);
-
-                    if (result.has("website")) {
-                        String website = (String)result.get("website");
-                        dialysisClinicWebsiteUrl.setText(website);
-                        dialysisClinicWebsiteUrl.setVisibility(View.VISIBLE);
-                        dialysisClinicWebsiteNA.setVisibility(View.INVISIBLE);
-                    } else {
-                        dialysisClinicWebsiteUrl.setVisibility(View.INVISIBLE);
-                        dialysisClinicWebsiteNA.setVisibility(View.VISIBLE);
-                    }
-
-                    if (result.has("rating")) {
-                        double rating = (double) result.get("rating");
-                        dialysisClinicRating.setText("Rating: " + rating);
-                    } else {
-                        dialysisClinicRating.setText("Rating: N/A");
-                    }
-
-
-                    JSONObject geometry = (JSONObject) result.get("geometry");
-                    JSONObject location = (JSONObject) geometry.get("location");
-                    LatLng destLatLng = new LatLng((double) location.get("lat"), (double) location.get("lng"));
-                    if (mStreetViewPanoramaMap != null) {
-                        mStreetViewPanoramaMap.setPosition(destLatLng, 500);
-                    }
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
-            }
-        }, new Response.ErrorListener() {
-
-            @Override
-            public void onErrorResponse(VolleyError error) {
-                System.out.println("Error: " + error.toString());
-            }
-        });
-        queue.add(obj);
-    }
+//    public void getPlaceInfo(String placeId) {
+//
+//
+//        String url = "https://maps.googleapis.com/maps/api/place/details/json?placeid=" + placeId + "&key=" + getString(R.string.google_api_key);
+//
+//
+//        JsonObjectRequest obj = new JsonObjectRequest(Request.Method.GET, url, null, new Response.Listener<JSONObject>() {
+//            @Override
+//            public void onResponse(JSONObject response) {
+//                System.out.println("Specific Place Info: " + response.toString());
+//                try {
+//                    JSONObject result = (JSONObject) response.get("result");
+//
+//                    String name = (String) result.get("name");
+//                    dialysisClinicName.setText(name);
+//
+//                    if (result.has("website")) {
+//                        String website = (String)result.get("website");
+//                        dialysisClinicWebsiteUrl.setText(website);
+//                        dialysisClinicWebsiteUrl.setVisibility(View.VISIBLE);
+//                        dialysisClinicWebsiteNA.setVisibility(View.INVISIBLE);
+//                    } else {
+//                        dialysisClinicWebsiteUrl.setVisibility(View.INVISIBLE);
+//                        dialysisClinicWebsiteNA.setVisibility(View.VISIBLE);
+//                    }
+//
+//                    if (result.has("rating")) {
+//                        double rating = (double) result.get("rating");
+//                        dialysisClinicRating.setText("Rating: " + rating);
+//                    } else {
+//                        dialysisClinicRating.setText("Rating: N/A");
+//                    }
+//
+//
+//                    JSONObject geometry = (JSONObject) result.get("geometry");
+//                    JSONObject location = (JSONObject) geometry.get("location");
+//                    LatLng destLatLng = new LatLng((double) location.get("lat"), (double) location.get("lng"));
+//                    if (mStreetViewPanoramaMap != null) {
+//                        mStreetViewPanoramaMap.setPosition(destLatLng, 500);
+//                    }
+//                } catch (JSONException e) {
+//                    e.printStackTrace();
+//                }
+//            }
+//        }, new Response.ErrorListener() {
+//
+//            @Override
+//            public void onErrorResponse(VolleyError error) {
+//                System.out.println("Error: " + error.toString());
+//            }
+//        });
+//        queue.add(obj);
+//    }
 
 
 }
