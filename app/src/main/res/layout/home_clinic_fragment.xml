@@ -45,8 +45,8 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:id="@+id/dialysis_clinic_website"
-                    android:text="Website: "
+                    android:id="@+id/dialysis_clinic_phone"
+                    android:text="Phone: "
                     android:textColor="#000000"
                     android:textSize="12sp"
                     android:layout_below="@+id/dialysis_clinic_rating"
@@ -55,14 +55,14 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:id="@+id/dialysis_clinic_website_url"
+                    android:id="@+id/dialysis_clinic_phone_number"
                     android:textColor="#000000"
                     android:textSize="12sp"
                     android:layout_below="@+id/dialysis_clinic_rating"
-                    android:layout_toEndOf="@+id/dialysis_clinic_website"
-                    android:layout_toRightOf="@+id/dialysis_clinic_website"
+                    android:layout_toEndOf="@+id/dialysis_clinic_phone"
+                    android:layout_toRightOf="@+id/dialysis_clinic_phone"
                     android:layout_marginTop="10dp"
-                    android:autoLink="web"/>
+                    android:autoLink="phone"/>
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -71,8 +71,8 @@
                     android:textColor="#000000"
                     android:textSize="12sp"
                     android:layout_below="@+id/dialysis_clinic_rating"
-                    android:layout_toEndOf="@+id/dialysis_clinic_website"
-                    android:layout_toRightOf="@+id/dialysis_clinic_website"
+                    android:layout_toEndOf="@+id/dialysis_clinic_phone"
+                    android:layout_toRightOf="@+id/dialysis_clinic_phone"
                     android:layout_marginTop="10dp"
                     android:visibility="invisible"/>
             </RelativeLayout>
