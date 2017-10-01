@@ -4,6 +4,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Location;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -11,6 +12,8 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
+import android.text.SpannableString;
+import android.text.style.UnderlineSpan;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -64,6 +67,7 @@ public class HomeClinicFragment extends Fragment implements GoogleApiClient.OnCo
     private TextView dialysisClinicPhone;
     private TextView dialysisClinicPhoneNumber;
     private TextView dialysisClinicWebsiteNA;
+    private TextView dialysisClinicAddress;
     private static final String TAG = "HomeClinicFragment";
     private static final LatLng SYDNEY = new LatLng(-33.87365, 151.20689);
     private static final String STREETVIEW_BUNDLE_KEY = "StreetViewBundleKey";
@@ -107,6 +111,15 @@ public class HomeClinicFragment extends Fragment implements GoogleApiClient.OnCo
         dialysisClinicPhone = (TextView) view.findViewById(R.id.dialysis_clinic_phone);
         dialysisClinicPhoneNumber = (TextView) view.findViewById(R.id.dialysis_clinic_phone_number);
         dialysisClinicWebsiteNA = (TextView) view.findViewById(R.id.dialysis_clinic_website_na);
+        dialysisClinicAddress = (TextView) view.findViewById(R.id.dialysis_clinic_address);
+        dialysisClinicAddress.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent geoIntent = new Intent(Intent.ACTION_VIEW, Uri.parse("geo:0,0?q="
+                        + dialysisClinicAddress.getText().toString()));
+                startActivity(geoIntent);
+            }
+        });
 
         btnShare = (Button) view.findViewById(R.id.share_button);
 
@@ -132,6 +145,10 @@ public class HomeClinicFragment extends Fragment implements GoogleApiClient.OnCo
                     Place myPlace = places.get(0);
                     dialysisClinicRating.setText(myPlace.getRating() + "/5");
                     dialysisClinicPhoneNumber.setText(myPlace.getPhoneNumber());
+                    // Setting the address to look and behave like a link
+                    SpannableString dialysisClinicAddressSpannable = new SpannableString(myPlace.getAddress());
+                    dialysisClinicAddressSpannable.setSpan(new UnderlineSpan(), 0, dialysisClinicAddressSpannable.length(), 0);
+                    dialysisClinicAddress.setText(dialysisClinicAddressSpannable);
                     Log.i(TAG, "Place found: " + myPlace.getLatLng());
                     places.release();
                 } else {
