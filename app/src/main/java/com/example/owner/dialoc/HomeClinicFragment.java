@@ -1,6 +1,7 @@
 package com.example.owner.dialoc;
 
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Location;
 import android.os.Bundle;
@@ -14,6 +15,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.TextView;
 
 import com.android.volley.Request;
@@ -68,6 +70,8 @@ public class HomeClinicFragment extends Fragment implements GoogleApiClient.OnCo
     private GeoDataClient mGeoDataClient;
     private PlaceDetectionClient mPlaceDetectionClient;
 
+    private Button btnShare;
+    private Intent shareIntent;
 
     public HomeClinicFragment() {
     }
@@ -103,6 +107,19 @@ public class HomeClinicFragment extends Fragment implements GoogleApiClient.OnCo
         dialysisClinicPhone = (TextView) view.findViewById(R.id.dialysis_clinic_phone);
         dialysisClinicPhoneNumber = (TextView) view.findViewById(R.id.dialysis_clinic_phone_number);
         dialysisClinicWebsiteNA = (TextView) view.findViewById(R.id.dialysis_clinic_website_na);
+
+        btnShare = (Button) view.findViewById(R.id.share_button);
+
+        btnShare.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                shareIntent = new Intent(Intent.ACTION_SEND);
+                shareIntent.setType("text/plain");
+//                shareIntent.putExtra(Intent.EXTRA_SUBJECT, "");
+                shareIntent.putExtra(Intent.EXTRA_TEXT, "I am currently at: " + dialysisClinicName.getText());
+                startActivity(Intent.createChooser(shareIntent, "Share via"));
+            }
+        });
 
         if (ActivityCompat.checkSelfPermission(getContext(), android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             checkLocationPermission();

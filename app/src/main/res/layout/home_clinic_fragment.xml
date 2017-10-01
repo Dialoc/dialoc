@@ -75,6 +75,17 @@
                     android:layout_toRightOf="@+id/dialysis_clinic_phone"
                     android:layout_marginTop="10dp"
                     android:visibility="invisible"/>
+                <Button
+                    android:id="@+id/share_button"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Share"
+                    android:layout_alignBaseline="@+id/dialysis_clinic_name"
+                    android:layout_alignBottom="@+id/dialysis_clinic_name"
+                    android:layout_toRightOf="@+id/dialysis_clinic_name"
+                    android:layout_toEndOf="@+id/dialysis_clinic_name"
+                    android:layout_marginLeft="26dp"
+                    android:layout_marginStart="26dp" />
             </RelativeLayout>
 
         </RelativeLayout>
