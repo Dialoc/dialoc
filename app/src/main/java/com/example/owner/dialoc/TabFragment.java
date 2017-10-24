@@ -10,7 +10,6 @@ import android.support.v4.view.ViewPager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Toast;
 
 /**
  * Created by Rahul on 11/26/2016.
@@ -129,11 +128,19 @@ public class TabFragment extends Fragment {
 
         @Override
         public Fragment getItem(int position) {
+            Bundle bundle = new Bundle();
+            Fragment fragment;
             switch(position) {
                 case 0:
-                    return new HomeClinicFragment();
+                    bundle.putString("place", "ChIJ5btcA5AE9YgRFAYcKNHxumU");
+                    fragment = new ClinicFragment();
+                    fragment.setArguments(bundle);
+                    return fragment;
                 case 1:
-                    return new BackupClinicFragment();
+                    bundle.putString("place", "ChIJBfUi1W8E9YgR8OaV1LSrqLs");
+                    fragment = new ClinicFragment();
+                    fragment.setArguments(bundle);
+                    return fragment;
                 case 2:
                     return new NearbyClinicsFragment();
             }
