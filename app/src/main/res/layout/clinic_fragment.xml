@@ -7,12 +7,12 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="vertical">
-        <com.google.android.gms.maps.StreetViewPanoramaView
+        <ImageView
             xmlns:android="http://schemas.android.com/apk/res/android"
             android:layout_width="match_parent"
             android:layout_height="0dp"
             android:layout_weight=".5"
-            android:id="@+id/street_view_of_backup_clinic" />
+            android:id="@+id/clinic_image" />
         <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="0dp"
@@ -25,8 +25,7 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:id="@+id/backup_dialysis_clinic_name"
-                    android:text="Emory Dialysis Center at Northside"
+                    android:id="@+id/dialysis_clinic_name"
                     android:textColor="#000000"
                     android:textSize="15sp"
                     android:layout_marginTop="20dp"
@@ -35,68 +34,68 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:id="@+id/backup_dialysis_clinic_rating"
+                    android:id="@+id/dialysis_clinic_rating"
                     android:text="Rating:"
                     android:textColor="#000000"
                     android:textSize="12sp"
-                    android:layout_below="@+id/backup_dialysis_clinic_name"
-                    android:layout_alignLeft="@+id/backup_dialysis_clinic_name"
+                    android:layout_below="@+id/dialysis_clinic_name"
+                    android:layout_alignLeft="@+id/dialysis_clinic_name"
                     android:layout_marginTop="10dp"/>
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:id="@+id/backup_dialysis_clinic_phone"
+                    android:id="@+id/dialysis_clinic_phone"
                     android:text="Phone: "
                     android:textColor="#000000"
                     android:textSize="12sp"
-                    android:layout_below="@+id/backup_dialysis_clinic_rating"
-                    android:layout_alignLeft="@+id/backup_dialysis_clinic_name"
+                    android:layout_below="@+id/dialysis_clinic_rating"
+                    android:layout_alignLeft="@+id/dialysis_clinic_name"
                     android:layout_marginTop="10dp"/>
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:id="@+id/backup_dialysis_clinic_phone_number"
+                    android:id="@+id/dialysis_clinic_phone_number"
                     android:textColor="#000000"
                     android:textSize="12sp"
-                    android:layout_below="@+id/backup_dialysis_clinic_rating"
-                    android:layout_toEndOf="@+id/backup_dialysis_clinic_phone"
-                    android:layout_toRightOf="@+id/backup_dialysis_clinic_phone"
+                    android:layout_below="@+id/dialysis_clinic_rating"
+                    android:layout_toEndOf="@+id/dialysis_clinic_phone"
+                    android:layout_toRightOf="@+id/dialysis_clinic_phone"
                     android:layout_marginTop="10dp"
                     android:autoLink="phone"
                     android:textColorLink="@color/wallet_link_text_light"/>
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:id="@+id/backup_dialysis_clinic_address_text"
+                    android:id="@+id/dialysis_clinic_address_text"
                     android:textColor="#000000"
                     android:textSize="12sp"
                     android:text="Address: "
-                    android:layout_below="@+id/backup_dialysis_clinic_phone"
-                    android:layout_alignLeft="@+id/backup_dialysis_clinic_phone"
-                    android:layout_alignStart="@+id/backup_dialysis_clinic_phone"
+                    android:layout_below="@+id/dialysis_clinic_phone"
+                    android:layout_alignLeft="@+id/dialysis_clinic_phone"
+                    android:layout_alignStart="@+id/dialysis_clinic_phone"
                     android:layout_marginTop="10dp" />
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:id="@+id/backup_dialysis_clinic_address"
+                    android:id="@+id/dialysis_clinic_address"
                     android:textSize="12sp"
                     android:textColor="@color/wallet_link_text_light"
-                    android:layout_below="@+id/backup_dialysis_clinic_phone"
-                    android:layout_toEndOf="@+id/backup_dialysis_clinic_address_text"
-                    android:layout_toRightOf="@+id/backup_dialysis_clinic_address_text"
+                    android:layout_below="@+id/dialysis_clinic_phone"
+                    android:layout_toEndOf="@+id/dialysis_clinic_address_text"
+                    android:layout_toRightOf="@+id/dialysis_clinic_address_text"
                     android:layout_marginTop="10dp"
                     android:linksClickable="true"
                     android:textColorLink="@color/wallet_link_text_light"/>
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:id="@+id/backup_dialysis_clinic_website_na"
+                    android:id="@+id/dialysis_clinic_website_na"
                     android:text="N/A"
                     android:textColor="#000000"
                     android:textSize="12sp"
-                    android:layout_below="@+id/backup_dialysis_clinic_rating"
-                    android:layout_toEndOf="@+id/backup_dialysis_clinic_phone"
-                    android:layout_toRightOf="@+id/backup_dialysis_clinic_phone"
+                    android:layout_below="@+id/dialysis_clinic_rating"
+                    android:layout_toEndOf="@+id/dialysis_clinic_phone"
+                    android:layout_toRightOf="@+id/dialysis_clinic_phone"
                     android:layout_marginTop="10dp"
                     android:visibility="invisible"/>
                 <Button
@@ -104,10 +103,10 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="Share"
-                    android:layout_alignBaseline="@+id/backup_dialysis_clinic_name"
-                    android:layout_alignBottom="@+id/backup_dialysis_clinic_name"
-                    android:layout_toRightOf="@+id/backup_dialysis_clinic_name"
-                    android:layout_toEndOf="@+id/backup_dialysis_clinic_name"
+                    android:layout_alignBaseline="@+id/dialysis_clinic_name"
+                    android:layout_alignBottom="@+id/dialysis_clinic_name"
+                    android:layout_toRightOf="@+id/dialysis_clinic_name"
+                    android:layout_toEndOf="@+id/dialysis_clinic_name"
                     android:layout_marginLeft="26dp"
                     android:layout_marginStart="26dp" />
             </RelativeLayout>
@@ -127,7 +126,7 @@
                 <ImageView
                     android:layout_width="48dp"
                     android:layout_height="48dp"
-                    android:id="@+id/backup_search_button"
+                    android:id="@+id/home_search_button"
                     android:layout_centerInParent="true"
                     android:background="@drawable/ic_search_black_24dp"/>
                 <TextView
@@ -135,7 +134,7 @@
                     android:layout_height="wrap_content"
                     android:layout_centerHorizontal="true"
                     android:text="Search"
-                    android:layout_below="@+id/backup_search_button" />
+                    android:layout_below="@+id/home_search_button" />
             </RelativeLayout>
             <RelativeLayout
                 android:layout_width="0dp"
@@ -144,7 +143,7 @@
                 <ImageView
                     android:layout_width="48dp"
                     android:layout_height="48dp"
-                    android:id="@+id/backup_account"
+                    android:id="@+id/home_account"
                     android:layout_centerInParent="true"
                     android:background="@drawable/ic_account_circle_black_24dp"/>
                 <TextView
@@ -152,7 +151,7 @@
                     android:layout_height="wrap_content"
                     android:layout_centerHorizontal="true"
                     android:text="Profile"
-                    android:layout_below="@+id/backup_account" />
+                    android:layout_below="@+id/home_account" />
             </RelativeLayout>
             <RelativeLayout
                 android:layout_width="0dp"
@@ -161,7 +160,7 @@
                 <ImageView
                     android:layout_width="48dp"
                     android:layout_height="48dp"
-                    android:id="@+id/backup_favorites"
+                    android:id="@+id/home_favorites"
                     android:layout_centerInParent="true"
                     android:background="@drawable/ic_favorite_black_24dp"/>
                 <TextView
@@ -169,7 +168,7 @@
                     android:layout_height="wrap_content"
                     android:layout_centerHorizontal="true"
                     android:text="Favorites"
-                    android:layout_below="@+id/backup_favorites" />
+                    android:layout_below="@+id/home_favorites" />
             </RelativeLayout>
 
 
@@ -178,9 +177,9 @@
 
     </LinearLayout>
     <!--<TextView-->
-    <!--android:layout_width="wrap_content"-->
-    <!--android:layout_height="wrap_content"-->
-    <!--android:text="Home Clinic"-->
-    <!--android:layout_centerInParent="true"/>-->
+        <!--android:layout_width="wrap_content"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--android:text="Home Clinic"-->
+        <!--android:layout_centerInParent="true"/>-->
 
 </RelativeLayout>
