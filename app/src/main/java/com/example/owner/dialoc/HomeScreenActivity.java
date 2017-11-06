@@ -10,11 +10,15 @@ import android.location.Location;
 import android.os.AsyncTask;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.design.widget.CollapsingToolbarLayout;
+import android.support.design.widget.TabLayout;
 import android.support.v4.app.ActivityCompat;
+import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.design.widget.NavigationView;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.content.ContextCompat;
+import android.support.v4.view.ViewPager;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AlertDialog;
@@ -63,6 +67,10 @@ public class HomeScreenActivity extends AppCompatActivity {
 
     private ImageView placeImageView;
 
+    public DrawerLayout getDrawerLayout() {
+        return  mDrawerLayout;
+    }
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -78,9 +86,14 @@ public class HomeScreenActivity extends AppCompatActivity {
         //Inflating TabFragment as first fragment
         mFragmentManager = getSupportFragmentManager();
         mFragmentTransaction = mFragmentManager.beginTransaction();
-        mFragmentTransaction.replace(R.id.containerView, new TabFragment()).commit();
+        Fragment clinicFragment = new ClinicFragment();
+        Bundle bundle = new Bundle();
+        bundle.putString("place", "ChIJ5btcA5AE9YgRFAYcKNHxumU");
+        clinicFragment.setArguments(bundle);
+        mFragmentTransaction.add(R.id.containerView, clinicFragment).commit();
 
         // Setup click events on the Navigation View Items
+
         mNavigationView.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
             @Override
             public boolean onNavigationItemSelected(MenuItem item) {
@@ -127,12 +140,11 @@ public class HomeScreenActivity extends AppCompatActivity {
         });
 
         // Setup Drawer Toggle of the Toolbar
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        toolbar.setTitle("Home Clinic");
-        setSupportActionBar(toolbar);
-        ActionBarDrawerToggle mDrawerToggle = new ActionBarDrawerToggle(this, mDrawerLayout, toolbar, R.string.app_name, R.string.app_name);
-        mDrawerLayout.addDrawerListener(mDrawerToggle);
-        mDrawerToggle.syncState();
+//        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+//        setSupportActionBar(toolbar);
+//        ActionBarDrawerToggle mDrawerToggle = new ActionBarDrawerToggle(this, mDrawerLayout, toolbar, R.string.app_name, R.string.app_name);
+//        mDrawerLayout.addDrawerListener(mDrawerToggle);
+//        mDrawerToggle.syncState();
 
 
     }

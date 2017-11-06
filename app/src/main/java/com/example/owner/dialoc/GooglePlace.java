@@ -2,6 +2,7 @@ package com.example.owner.dialoc;
 
 import android.util.Log;
 
+import com.google.gson.JsonArray;
 import com.google.gson.JsonDeserializationContext;
 import com.google.gson.JsonDeserializer;
 import com.google.gson.JsonElement;
@@ -22,6 +23,15 @@ public class GooglePlace {
     private String international_phone_number;
     private double lat;
     private double lng;
+    private String[] photoArray;
+
+    public String[] getPhotoArray() {
+        return photoArray;
+    }
+
+    public void setPhotoArray(String[] photoArray) {
+        this.photoArray = photoArray;
+    }
 
     public static class GooglePlaceDeserializer implements JsonDeserializer<GooglePlace> {
         public GooglePlace deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context)
@@ -32,6 +42,12 @@ public class GooglePlace {
             place.setRating(obj.get("rating").getAsDouble());
             place.setInternational_phone_number(obj.get("international_phone_number").getAsString());
             place.setAddress(obj.get("formatted_address").getAsString());
+            JsonArray array = obj.get("photos").getAsJsonArray();
+            String[] photoRefs = new String[array.size()];
+            for (int i = 0; i < array.size(); i++) {
+                photoRefs[i] = array.get(0).getAsJsonObject().get("photo_reference").getAsString();
+            }
+            place.setPhotoArray(photoRefs);
             return place;
         }
     }

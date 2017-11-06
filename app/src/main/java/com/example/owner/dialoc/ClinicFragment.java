@@ -3,7 +3,14 @@ package com.example.owner.dialoc;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.design.widget.CollapsingToolbarLayout;
+import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
+import android.support.v4.view.ViewPager;
+import android.support.v4.widget.DrawerLayout;
+import android.support.v7.app.ActionBarDrawerToggle;
+import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
 import android.text.SpannableString;
 import android.text.style.UnderlineSpan;
 import android.util.Log;
@@ -13,6 +20,7 @@ import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.google.gson.Gson;
@@ -32,7 +40,6 @@ import retrofit2.converter.gson.GsonConverterFactory;
 public class ClinicFragment extends Fragment {
 
     private ImageView clinicImage;
-    private GooglePlace homeClinic;
 
     // Objects on screen
     private TextView dialysisClinicName;
@@ -41,10 +48,11 @@ public class ClinicFragment extends Fragment {
     private TextView dialysisClinicPhoneNumber;
     private TextView dialysisClinicWebsiteNA;
     private TextView dialysisClinicAddress;
+    private ViewPager viewPager;
     private static final String TAG = "ClinicFragment";
 
 
-    private Button btnShare;
+    private LinearLayout btnShare;
     private Intent shareIntent;
 
     public ClinicFragment() {
@@ -54,14 +62,10 @@ public class ClinicFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 
         // Inflate fragment and assign views
-        View view = inflater.inflate(R.layout.clinic_fragment, container, false);
-        dialysisClinicName = view.findViewById(R.id.dialysis_clinic_name);
-        dialysisClinicRating = view.findViewById(R.id.dialysis_clinic_rating);
-        dialysisClinicPhone =  view.findViewById(R.id.dialysis_clinic_phone);
+        View view = inflater.inflate(R.layout.clinic, container, false);
+//        dialysisClinicName = view.findViewById(R.id.dialysis_clinic_name);
         dialysisClinicPhoneNumber =  view.findViewById(R.id.dialysis_clinic_phone_number);
-        dialysisClinicWebsiteNA =  view.findViewById(R.id.dialysis_clinic_website_na);
         dialysisClinicAddress =  view.findViewById(R.id.dialysis_clinic_address);
-        clinicImage = view.findViewById(R.id.clinic_image);
         btnShare = view.findViewById(R.id.share_button);
 
         // Navigation to listed address
@@ -87,20 +91,27 @@ public class ClinicFragment extends Fragment {
         });
 
         // Find proper dimensions of the view to request picture of street
-        ViewTreeObserver vto = clinicImage.getViewTreeObserver();
-        vto.addOnPreDrawListener(new ViewTreeObserver.OnPreDrawListener() {
-            public boolean onPreDraw() {
-                // Remove after the first run
-                clinicImage.getViewTreeObserver().removeOnPreDrawListener(this);
-                int height = clinicImage.getMeasuredHeight();
-                int width = clinicImage.getMeasuredWidth();
-                String request = "https://maps.googleapis.com/maps/api/streetview?size=" + width +
-                        "x" + height + "&location=33.771683,-84.406718&heading=230&fov=80&key=" +
-                        getString(R.string.google_api_key);
-                Picasso.with(getContext()).load(request).fit().into(clinicImage);
-                return true;
-            }
-        });
+//        ViewTreeObserver vto = clinicImage.getViewTreeObserver();
+//        vto.addOnPreDrawListener(new ViewTreeObserver.OnPreDrawListener() {
+//            public boolean onPreDraw() {
+//                // Remove after the first run
+//                clinicImage.getViewTreeObserver().removeOnPreDrawListener(this);
+//                int height = clinicImage.getMeasuredHeight();
+//                int width = clinicImage.getMeasuredWidth();
+//                String request = "https://maps.googleapis.com/maps/api/streetview?size=" + width +
+//                        "x" + height + "&location=33.771683,-84.406718&heading=230&fov=80&key=" +
+//                        getString(R.string.google_api_key);
+//                Picasso.with(getContext()).load(request).fit().into(clinicImage);
+//                return true;
+//            }
+//        });
+
+        viewPager = view.findViewById(R.id.gallery);
+        viewPager.setAdapter(new ImagePagerAdapter(getContext(), new String[0]));
+        CollapsingToolbarLayout collapsingToolbarLayout = view.findViewById(R.id.toolbar_layout);
+        collapsingToolbarLayout.setTitleEnabled(false);
+        TabLayout tabLayout = (TabLayout) view.findViewById(R.id.tabDots);
+        tabLayout.setupWithViewPager(viewPager, true);
 
         // Get details of clinic
         Retrofit retrofit = new Retrofit.Builder()
@@ -118,17 +129,8 @@ public class ClinicFragment extends Fragment {
             @Override
             public void onResponse(Call<ResponseBody> call,
                                    retrofit2.Response<ResponseBody> response) {
-                homeClinic = gson.fromJson(response.body().charStream(), GooglePlace.class);
-                dialysisClinicName.setText(homeClinic.getName());
-                dialysisClinicRating.setText(homeClinic.getRating() + "/5");
-                dialysisClinicPhoneNumber.setText(homeClinic.getInternational_phone_number());
-                // Setting the address to look and behave like a link
-                SpannableString dialysisClinicAddressSpannable = new SpannableString(homeClinic
-                        .getAddress());
-                dialysisClinicAddressSpannable
-                        .setSpan(new UnderlineSpan(), 0,
-                                dialysisClinicAddressSpannable.length(), 0);
-                dialysisClinicAddress.setText(dialysisClinicAddressSpannable);
+                GooglePlace clinic = gson.fromJson(response.body().charStream(), GooglePlace.class);
+                populateClinicInfo(clinic);
             }
 
             @Override
@@ -136,7 +138,30 @@ public class ClinicFragment extends Fragment {
                 Log.e("HTTP Request", t.getMessage());
             }
         });
+
+        Toolbar toolbar =  view.findViewById(R.id.toolbar);
+        ((AppCompatActivity)getActivity()).setSupportActionBar(toolbar);
+        DrawerLayout mDrawerLayout = ((HomeScreenActivity)getActivity()).getDrawerLayout();
+        ActionBarDrawerToggle mDrawerToggle = new ActionBarDrawerToggle(getActivity(), mDrawerLayout, toolbar, R.string.app_name, R.string.app_name);
+        mDrawerLayout.addDrawerListener(mDrawerToggle);
+        mDrawerToggle.syncState();
         return view;
+    }
+
+
+
+    private void populateClinicInfo(GooglePlace clinic) {
+//        dialysisClinicName.setText(clinic.getName());
+        ((ImagePagerAdapter)viewPager.getAdapter()).images = clinic.getPhotoArray();
+        viewPager.getAdapter().notifyDataSetChanged();
+        dialysisClinicPhoneNumber.setText(clinic.getInternational_phone_number());
+        // Setting the address to look and behave like a link
+//        SpannableString dialysisClinicAddressSpannable = new SpannableString(clinic
+//                .getAddress());
+//        dialysisClinicAddressSpannable
+//                .setSpan(new UnderlineSpan(), 0,
+//                        dialysisClinicAddressSpannable.length(), 0);
+        dialysisClinicAddress.setText(clinic.getAddress());
     }
 
 }

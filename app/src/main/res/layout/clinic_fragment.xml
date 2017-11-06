@@ -170,9 +170,6 @@
                     android:text="Favorites"
                     android:layout_below="@+id/home_favorites" />
             </RelativeLayout>
-
-
-
         </LinearLayout>
 
     </LinearLayout>
