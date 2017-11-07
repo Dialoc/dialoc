@@ -10,6 +10,7 @@ import android.location.Location;
 import android.os.AsyncTask;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.design.widget.BottomNavigationView;
 import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.ActivityCompat;
@@ -64,6 +65,7 @@ public class HomeScreenActivity extends AppCompatActivity {
     private NavigationView mNavigationView;
     private FragmentManager mFragmentManager;
     private FragmentTransaction mFragmentTransaction;
+    private BottomNavigationView bottomNavigationView;
 
     private ImageView placeImageView;
 
@@ -79,18 +81,47 @@ public class HomeScreenActivity extends AppCompatActivity {
 
         mTitle = mDrawerTitle = getTitle();
 
-        mDrawerLayout = (DrawerLayout) findViewById(R.id.drawerLayout);
-        mNavigationView = (NavigationView) findViewById(R.id.navigationView);
+        mDrawerLayout = findViewById(R.id.drawerLayout);
+        mNavigationView = findViewById(R.id.navigationView);
+        bottomNavigationView = findViewById(R.id.bottom_nav);
 
 
         //Inflating TabFragment as first fragment
         mFragmentManager = getSupportFragmentManager();
         mFragmentTransaction = mFragmentManager.beginTransaction();
-        Fragment clinicFragment = new ClinicFragment();
+        final ClinicFragment clinicFragment = new ClinicFragment();
         Bundle bundle = new Bundle();
-        bundle.putString("place", "ChIJ5btcA5AE9YgRFAYcKNHxumU");
+        bundle.putString("HOME", "ChIJ5btcA5AE9YgRFAYcKNHxumU");
+        bundle.putString("BACKUP", "ChIJBfUi1W8E9YgR8OaV1LSrqLs");
         clinicFragment.setArguments(bundle);
         mFragmentTransaction.add(R.id.containerView, clinicFragment).commit();
+        bottomNavigationView.setOnNavigationItemSelectedListener(new BottomNavigationView.OnNavigationItemSelectedListener() {
+            @Override
+            public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+                GooglePlace clinic;
+                if (item.getItemId() == R.id.home_clinic) {
+                    clinic = clinicFragment.getClinics()[ClinicFragment.ClinicType.HOME.ordinal()];
+                    if (clinic == null) {
+                        clinicFragment.setClinic(ClinicFragment.ClinicType.HOME);
+                    } else {
+                        clinicFragment.populateClinicInfo(clinic);
+                    }
+                } else if(item.getItemId() == R.id.backup_clinic) {
+                    clinic = clinicFragment.getClinics()[ClinicFragment.ClinicType.BACKUP.ordinal()];
+                    if (clinic == null) {
+                        clinicFragment.setClinic(ClinicFragment.ClinicType.BACKUP);
+                    } else {
+                        clinicFragment.populateClinicInfo(clinic);
+                    }
+                } else if(item.getItemId() == R.id.nearby_clinics) {
+
+                }
+                return true;
+
+            }
+        });
+
+
 
         // Setup click events on the Navigation View Items
 

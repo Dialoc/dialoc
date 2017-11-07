@@ -21,7 +21,7 @@
         </activity>
         <activity
             android:name=".HomeScreenActivity"
-            android:theme="@style/AppTheme"
+            android:theme="@style/AppTheme.NoActionBar"
             android:parentActivityName=".LoginScreen" />
         <meta-data
             android:name="com.google.android.geo.API_KEY"

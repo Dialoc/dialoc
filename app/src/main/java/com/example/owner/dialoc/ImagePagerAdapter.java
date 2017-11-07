@@ -42,8 +42,14 @@ public class ImagePagerAdapter extends PagerAdapter {
         View itemView = layoutInflater.inflate(R.layout.single_image, container, false);
 
         ImageView imageView = itemView.findViewById(R.id.image);
-        Picasso.with(context).load("https://maps.googleapis.com/maps/api/place/photo?maxwidth=400&photoreference="
-                + images[position] + "&key=" + context.getString(R.string.google_api_key)).into(imageView);
+        String url;
+        if (position < images.length - 1) {
+            url = "https://maps.googleapis.com/maps/api/place/photo?maxwidth=400&photoreference="
+                    + images[position] + "&key=" + context.getString(R.string.google_api_key);
+        } else {
+            url = images[position];
+        }
+        Picasso.with(context).load(url).into(imageView);
         container.addView(itemView);
 
         //listening to image click

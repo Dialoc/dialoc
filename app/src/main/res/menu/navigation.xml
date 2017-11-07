@@ -2,17 +2,17 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
 
     <item
-        android:id="@+id/navigation_home"
+        android:id="@+id/home_clinic"
         android:icon="@drawable/ic_home_black_24dp"
         android:title="@string/title_home" />
 
     <item
-        android:id="@+id/navigation_dashboard"
+        android:id="@+id/backup_clinic"
         android:icon="@drawable/ic_replay_black_24dp"
         android:title="Backup" />
 
     <item
-        android:id="@+id/navigation_notifications"
+        android:id="@+id/nearby_clinics"
         android:icon="@drawable/ic_near_me_black_24dp"
         android:title="Nearby" />
 
