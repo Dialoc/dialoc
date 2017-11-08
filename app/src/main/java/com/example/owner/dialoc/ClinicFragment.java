@@ -45,11 +45,8 @@ public class ClinicFragment extends Fragment {
 
     private ImageView clinicImage;
 
-    public GooglePlace[] getClinics() {
-        return clinics;
-    }
 
-    private GooglePlace[] clinics = new GooglePlace[2];
+    private GooglePlace clinic;
 
     // Objects on screen
     private TextView dialysisClinicName;
@@ -73,9 +70,6 @@ public class ClinicFragment extends Fragment {
     public ClinicFragment() {
     }
 
-    public enum ClinicType {
-        HOME, BACKUP
-    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -134,17 +128,17 @@ public class ClinicFragment extends Fragment {
         ActionBarDrawerToggle mDrawerToggle = new ActionBarDrawerToggle(getActivity(), mDrawerLayout, toolbar, R.string.app_name, R.string.app_name);
         mDrawerLayout.addDrawerListener(mDrawerToggle);
         mDrawerToggle.syncState();
+        setClinic();
 
-        BottomNavigationView bottomNavigationView = getActivity().findViewById(R.id.bottom_nav);
-        bottomNavigationView.setSelectedItemId(R.id.home_clinic);
+
+
         return view;
     }
 
     /**
      * Method to populate Fragment with relevant information
-     * @param clinic the GooglePlace representing a clinic
      */
-    void populateClinicInfo(GooglePlace clinic) {
+    void populateClinicInfo() {
         ((AppCompatActivity)getActivity()).getSupportActionBar().setTitle(clinic.getName());
         viewPager.setAdapter(new ImagePagerAdapter(getContext(), clinic.getPhotoArray()));
         dialysisClinicPhoneNumber.setText(clinic.getInternational_phone_number());
@@ -153,8 +147,8 @@ public class ClinicFragment extends Fragment {
         dialysisClinicAddress.setText(clinic.getAddress());
     }
 
-    void setClinic(final ClinicType type) {
-        String placeId = getArguments().getString(type.toString());
+    void setClinic() {
+        String placeId = getArguments().getString("place-id");
         Call<ResponseBody> call = googlePlaceAPI.getDetails(placeId, getString(R.string.google_api_key));
         call.enqueue(new Callback<ResponseBody>() {
             @Override
@@ -162,10 +156,8 @@ public class ClinicFragment extends Fragment {
                                    retrofit2.Response<ResponseBody> response) {
                 Log.d("HTTP Response", response.toString());
                 if (response.isSuccessful()) {
-                    GooglePlace clinic = null;
                     clinic = gson.fromJson(response.body().charStream(), GooglePlace.class);
-                    clinics[type.ordinal()] = clinic;
-                    populateClinicInfo(clinic);
+                    populateClinicInfo();
                 }
             }
             @Override

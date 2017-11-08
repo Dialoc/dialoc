@@ -87,31 +87,62 @@ public class HomeScreenActivity extends AppCompatActivity {
 
 
         //Inflating TabFragment as first fragment
+
+        // create clinic fragments
+        final ClinicFragment homeClinic = new ClinicFragment();
+        Bundle homeBundle = new Bundle();
+        homeBundle.putString("place-id", "ChIJ5btcA5AE9YgRFAYcKNHxumU");
+        homeClinic.setArguments(homeBundle);
+        final ClinicFragment backupClinic= new ClinicFragment();
+        final Bundle backupBundle = new Bundle();
+        backupBundle.putString("place-id", "ChIJBfUi1W8E9YgR8OaV1LSrqLs");
+        backupClinic.setArguments(backupBundle);
+
         mFragmentManager = getSupportFragmentManager();
-        mFragmentTransaction = mFragmentManager.beginTransaction();
-        final ClinicFragment clinicFragment = new ClinicFragment();
-        Bundle bundle = new Bundle();
-        bundle.putString("HOME", "ChIJ5btcA5AE9YgRFAYcKNHxumU");
-        bundle.putString("BACKUP", "ChIJBfUi1W8E9YgR8OaV1LSrqLs");
-        clinicFragment.setArguments(bundle);
-        mFragmentTransaction.add(R.id.containerView, clinicFragment).commit();
+
+
         bottomNavigationView.setOnNavigationItemSelectedListener(new BottomNavigationView.OnNavigationItemSelectedListener() {
             @Override
             public boolean onNavigationItemSelected(@NonNull MenuItem item) {
                 GooglePlace clinic;
                 if (item.getItemId() == R.id.home_clinic) {
-                    clinic = clinicFragment.getClinics()[ClinicFragment.ClinicType.HOME.ordinal()];
-                    if (clinic == null) {
-                        clinicFragment.setClinic(ClinicFragment.ClinicType.HOME);
+                    String fragTag = homeClinic.getClass().getSimpleName();
+                    if (mFragmentManager.findFragmentByTag(fragTag) == null) {
+                        FragmentTransaction ftx = mFragmentManager.beginTransaction();
+                        ftx.addToBackStack(homeClinic.getClass().getSimpleName());
+                        ftx.add(R.id.containerView, homeClinic);
+                        ftx.commit();
                     } else {
-                        clinicFragment.populateClinicInfo(clinic);
+                        boolean fragmentPopped = mFragmentManager
+                                .popBackStackImmediate(fragTag, 0);
+                        if (!fragmentPopped && mFragmentManager.findFragmentByTag(fragTag) == null) {
+
+                            FragmentTransaction ftx = mFragmentManager.beginTransaction();
+                            ftx.addToBackStack(homeClinic.getClass().getSimpleName());
+                            ftx.hide(backupClinic);
+                            ftx.show(homeClinic);
+                            ftx.commit();
+                        }
                     }
                 } else if(item.getItemId() == R.id.backup_clinic) {
-                    clinic = clinicFragment.getClinics()[ClinicFragment.ClinicType.BACKUP.ordinal()];
-                    if (clinic == null) {
-                        clinicFragment.setClinic(ClinicFragment.ClinicType.BACKUP);
+                    String fragTag = backupClinic.getClass().getSimpleName();
+                    if (mFragmentManager.findFragmentByTag(fragTag) == null) {
+                        FragmentTransaction ftx = mFragmentManager.beginTransaction();
+                        ftx.addToBackStack(backupClinic.getClass().getSimpleName());
+                        ftx.hide(homeClinic);
+                        ftx.add(R.id.containerView, backupClinic);
+                        ftx.commit();
                     } else {
-                        clinicFragment.populateClinicInfo(clinic);
+                        boolean fragmentPopped = mFragmentManager
+                                .popBackStackImmediate(fragTag, 0);
+                        if (!fragmentPopped && mFragmentManager.findFragmentByTag(fragTag) == null) {
+
+                            FragmentTransaction ftx = mFragmentManager.beginTransaction();
+                            ftx.addToBackStack(backupClinic.getClass().getSimpleName());
+                            ftx.hide(homeClinic);
+                            ftx.show(backupClinic);
+                            ftx.commit();
+                        }
                     }
                 } else if(item.getItemId() == R.id.nearby_clinics) {
 
@@ -120,6 +151,8 @@ public class HomeScreenActivity extends AppCompatActivity {
 
             }
         });
+        BottomNavigationView bottomNavigationView = findViewById(R.id.bottom_nav);
+        bottomNavigationView.setSelectedItemId(R.id.home_clinic);
 
 
 
