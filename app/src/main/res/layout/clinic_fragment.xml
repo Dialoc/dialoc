@@ -143,7 +143,7 @@
                 <ImageView
                     android:layout_width="48dp"
                     android:layout_height="48dp"
-                    android:id="@+id/home_account"
+                    android:id="@+id/profile_avatar"
                     android:layout_centerInParent="true"
                     android:background="@drawable/ic_account_circle_black_24dp"/>
                 <TextView
@@ -151,7 +151,7 @@
                     android:layout_height="wrap_content"
                     android:layout_centerHorizontal="true"
                     android:text="Profile"
-                    android:layout_below="@+id/home_account" />
+                    android:layout_below="@+id/profile_avatar" />
             </RelativeLayout>
             <RelativeLayout
                 android:layout_width="0dp"

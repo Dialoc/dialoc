@@ -42,6 +42,7 @@ import com.google.android.gms.maps.StreetViewPanorama;
 import com.google.android.gms.maps.StreetViewPanoramaFragment;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -60,6 +61,7 @@ public class HomeScreenActivity extends AppCompatActivity {
     private NavigationView mNavigationView;
     private FragmentManager mFragmentManager;
     private FragmentTransaction mFragmentTransaction;
+    private FirebaseAuth mAuth;
 
     private ImageView placeImageView;
 
@@ -133,8 +135,6 @@ public class HomeScreenActivity extends AppCompatActivity {
         ActionBarDrawerToggle mDrawerToggle = new ActionBarDrawerToggle(this, mDrawerLayout, toolbar, R.string.app_name, R.string.app_name);
         mDrawerLayout.addDrawerListener(mDrawerToggle);
         mDrawerToggle.syncState();
-
-
     }
 
 

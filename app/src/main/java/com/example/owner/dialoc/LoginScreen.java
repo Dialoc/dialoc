@@ -86,6 +86,7 @@ public class LoginScreen extends AppCompatActivity {
                             if (task.isSuccessful()) {
                                 // Sign in success, update UI with the signed-in user's information
                                 Log.d(TAG, "signInWithEmail:success");
+                                System.out.println("Task: " + task);
                                 startActivity(homeScreenIntent);
                                 finish();
                             } else {
@@ -145,6 +146,8 @@ public class LoginScreen extends AppCompatActivity {
                 // Google Sign In was successful, authenticate with Firebase
                 GoogleSignInAccount account = result.getSignInAccount();
                 firebaseAuthWithGoogle(account);
+                System.out.println("Google Sign in Success");
+                startActivity(new Intent(this, HomeScreenActivity.class));
             } else {
                 // Google Sign In failed, update UI appropriately
                 // ...

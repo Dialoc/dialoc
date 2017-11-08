@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-package="com.example.owner.dialoc">
+    xmlns:tools="http://schemas.android.com/tools"
+    package="com.example.owner.dialoc">
 
 <uses-permission android:name="android.permission.INTERNET" />
 <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
@@ -21,7 +22,10 @@ package="com.example.owner.dialoc">
         android:value="@string/google_api_key" />
 
 
-    <activity android:name=".RegisterActivity"></activity>
+    <activity android:name=".RegisterActivity"/>
+    <activity android:name=".UserProfileScreen"
+        android:parentActivityName=".HomeScreenActivity"/>
+
 </application>
 
 </manifest>

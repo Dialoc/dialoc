@@ -8,6 +8,7 @@ import android.text.SpannableString;
 import android.text.style.UnderlineSpan;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.Menu;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
@@ -41,6 +42,7 @@ public class ClinicFragment extends Fragment {
     private TextView dialysisClinicPhoneNumber;
     private TextView dialysisClinicWebsiteNA;
     private TextView dialysisClinicAddress;
+    private ImageView profileAvatar;
     private static final String TAG = "ClinicFragment";
 
 
@@ -63,6 +65,7 @@ public class ClinicFragment extends Fragment {
         dialysisClinicAddress =  view.findViewById(R.id.dialysis_clinic_address);
         clinicImage = view.findViewById(R.id.clinic_image);
         btnShare = view.findViewById(R.id.share_button);
+        profileAvatar = view.findViewById(R.id.profile_avatar);
 
         // Navigation to listed address
         dialysisClinicAddress.setOnClickListener(new View.OnClickListener() {
@@ -83,6 +86,15 @@ public class ClinicFragment extends Fragment {
                 shareIntent.putExtra(Intent.EXTRA_TEXT, "I am currently at: "
                         + dialysisClinicName.getText());
                 startActivity(Intent.createChooser(shareIntent, "Share via"));
+            }
+        });
+
+        // Navigate to User Profile Screen
+        profileAvatar.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(getActivity(), UserProfileScreen.class);
+                startActivity(intent);
             }
         });
 
