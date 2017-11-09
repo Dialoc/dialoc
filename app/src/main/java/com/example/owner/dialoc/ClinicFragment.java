@@ -3,17 +3,12 @@ package com.example.owner.dialoc;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
-import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.view.ViewPager;
-import android.support.v4.widget.DrawerLayout;
-import android.support.v7.app.ActionBarDrawerToggle;
-import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.LayoutInflater;
-import android.view.Menu;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
@@ -38,7 +33,12 @@ import retrofit2.converter.gson.GsonConverterFactory;
 public class ClinicFragment extends Fragment {
 
     private ImageView clinicImage;
-    private GooglePlace homeClinic;
+
+    public GooglePlace getClinic() {
+        return clinic;
+    }
+
+    private GooglePlace clinic;
 
     // Objects on screen
     private TextView dialysisClinicName;
@@ -72,6 +72,8 @@ public class ClinicFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         // Set up request to Places Web Service using retrofit
+        super.onCreateView(inflater, container, savedInstanceState);
+
         Retrofit retrofit = new Retrofit.Builder()
                 .baseUrl("https://maps.googleapis.com/")
                 .addConverterFactory(GsonConverterFactory.create())
@@ -142,12 +144,7 @@ public class ClinicFragment extends Fragment {
         tabLayout.setupWithViewPager(viewPager, true);
 
         // Set toolbar
-        toolbar =  view.findViewById(R.id.toolbar);
-        ((AppCompatActivity)getActivity()).setSupportActionBar(toolbar);
-        DrawerLayout mDrawerLayout = ((HomeScreenActivity)getActivity()).getDrawerLayout();
-        ActionBarDrawerToggle mDrawerToggle = new ActionBarDrawerToggle(getActivity(), mDrawerLayout, toolbar, R.string.app_name, R.string.app_name);
-        mDrawerLayout.addDrawerListener(mDrawerToggle);
-        mDrawerToggle.syncState();
+
         setClinic();
         return view;
     }
@@ -156,7 +153,7 @@ public class ClinicFragment extends Fragment {
      * Method to populate Fragment with relevant information
      */
     void populateClinicInfo() {
-        toolbar.setTitle(clinic.getName());
+        getActivity().setTitle(clinic.getName());
         viewPager.setAdapter(new ImagePagerAdapter(view.getContext(), clinic.getPhotoArray()));
         dialysisClinicPhoneNumber.setText(clinic.getInternational_phone_number());
         Calendar calendar = Calendar.getInstance();

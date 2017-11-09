@@ -132,10 +132,18 @@ public class HomeScreenActivity extends AppCompatActivity {
                     }
                 }
             }
-            Log.d("Current Fragment", currentTab.toString());
-            Log.d("Fragments", mFragmentManager.getFragments().toString());
-
         }
+//        Toolbar toolbar =  findViewById(R.id.toolbar);
+//        setSupportActionBar(toolbar);
+//        ActionBarDrawerToggle mDrawerToggle = new ActionBarDrawerToggle(this, mDrawerLayout, toolbar, R.string.app_name, R.string.app_name);
+//        mDrawerLayout.addDrawerListener(mDrawerToggle);
+//        mDrawerToggle.syncState();
+        Toolbar toolbar = findViewById(R.id.toolbar);
+        toolbar.setTitle("Home Clinic");
+        setSupportActionBar(toolbar);
+        ActionBarDrawerToggle mDrawerToggle = new ActionBarDrawerToggle(this, mDrawerLayout, toolbar, R.string.app_name, R.string.app_name);
+        mDrawerLayout.addDrawerListener(mDrawerToggle);
+        mDrawerToggle.syncState();
 
 
         bottomNavigationView.setOnNavigationItemSelectedListener(new BottomNavigationView.OnNavigationItemSelectedListener() {
@@ -146,13 +154,17 @@ public class HomeScreenActivity extends AppCompatActivity {
                     ftx.hide(currentTab).show(homeClinic).commit();
                     currentTab = homeClinic;
                     currentPlaceId = homePlaceId;
-                    Log.d("Selected", "TAB 1");
+                    if (homeClinic.getClinic() != null) {
+                        setTitle(homeClinic.getClinic().getName());
+                    }
                 } else if(item.getItemId() == R.id.backup_clinic) {
                     FragmentTransaction ftx = mFragmentManager.beginTransaction();
                     ftx.hide(currentTab).show(backupClinic).commit();
                     currentTab = backupClinic;
                     currentPlaceId = backupPlaceId;
-                    Log.d("Selected", "TAB 2");
+                    if (backupClinic.getClinic() != null) {
+                        setTitle(backupClinic.getClinic().getName());
+                    }
                 } else if(item.getItemId() == R.id.nearby_clinics) {
                 }
                 return true;
@@ -172,35 +184,23 @@ public class HomeScreenActivity extends AppCompatActivity {
                 mDrawerLayout.closeDrawers();
 
                 if (item.getItemId() == R.id.nav_home) {
-                    FragmentTransaction fragmentTransaction = mFragmentManager.beginTransaction();
-                    fragmentTransaction.replace(R.id.containerView, new TabFragment()).commit();
-                }
 
-                if (item.getItemId() == R.id.nav_faq) {
+                } else if (item.getItemId() == R.id.nav_faq) {
                     FragmentTransaction fragmentTransaction = mFragmentManager.beginTransaction();
                     fragmentTransaction.replace(R.id.containerView, new TabFragment()).commit();
-                }
-
-                if (item.getItemId() == R.id.nav_favorites) {
+                } else if (item.getItemId() == R.id.nav_favorites) {
                     FragmentTransaction fragmentTransaction = mFragmentManager.beginTransaction();
                     fragmentTransaction.replace(R.id.containerView, new TabFragment()).commit();
-                }
-
-                if (item.getItemId() == R.id.nav_search) {
+                } else if (item.getItemId() == R.id.nav_search) {
                     FragmentTransaction fragmentTransaction = mFragmentManager.beginTransaction();
                     fragmentTransaction.replace(R.id.containerView, new TabFragment()).commit();
-                }
-
-                // TODO MAKE SURE TO ADD A TEAMS FRAGMENT
-                if (item.getItemId() == R.id.nav_notifications) {
+                } else if (item.getItemId() == R.id.nav_notifications) {
                     FragmentTransaction fragmentTransaction = mFragmentManager.beginTransaction();
                     fragmentTransaction.replace(R.id.containerView, new TabFragment()).commit();
-                }
-                if (item.getItemId() == R.id.nav_settings) {
-                    FragmentTransaction fragmentTransaction = mFragmentManager.beginTransaction();
-                    fragmentTransaction.replace(R.id.containerView, new TabFragment()).commit();
-                }
-                if (item.getItemId() == R.id.nav_logout) {
+                } else if (item.getItemId() == R.id.profile) {
+                    Intent intent = new Intent(HomeScreenActivity.this, UserProfileScreen.class);
+                    startActivity(intent);
+                } else if (item.getItemId() == R.id.nav_logout) {
                     FirebaseAuth.getInstance().signOut();
                     Intent loginScreen = new Intent(HomeScreenActivity.this, LoginScreen.class);
                     startActivity(loginScreen);
