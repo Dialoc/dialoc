@@ -28,10 +28,6 @@
             android:value="@string/google_api_key" />
 
         <activity android:name=".RegisterActivity" />
-        <activity
-            android:name=".ScrollingActivity"
-            android:label="@string/title_activity_scrolling"
-            android:theme="@style/AppTheme" />
     </application>
 
 </manifest>

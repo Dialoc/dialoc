@@ -19,6 +19,7 @@ import android.support.v4.app.FragmentManager;
 import android.support.design.widget.NavigationView;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.content.ContextCompat;
+import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
@@ -26,6 +27,7 @@ import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.MenuItem;
 import android.widget.ImageView;
 
@@ -52,6 +54,8 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.util.List;
+
 public class HomeScreenActivity extends AppCompatActivity {
 
 
@@ -68,6 +72,11 @@ public class HomeScreenActivity extends AppCompatActivity {
     private BottomNavigationView bottomNavigationView;
 
     private ImageView placeImageView;
+    private Fragment currentTab;
+    private ClinicFragment homeClinic;
+    private ClinicFragment backupClinic;
+
+    private String currentPlaceId;
 
     public DrawerLayout getDrawerLayout() {
         return  mDrawerLayout;
@@ -78,86 +87,83 @@ public class HomeScreenActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.home_screen);
-
         mTitle = mDrawerTitle = getTitle();
-
         mDrawerLayout = findViewById(R.id.drawerLayout);
         mNavigationView = findViewById(R.id.navigationView);
         bottomNavigationView = findViewById(R.id.bottom_nav);
-
-
-        //Inflating TabFragment as first fragment
-
-        // create clinic fragments
-        final ClinicFragment homeClinic = new ClinicFragment();
-        Bundle homeBundle = new Bundle();
-        homeBundle.putString("place-id", "ChIJ5btcA5AE9YgRFAYcKNHxumU");
-        homeClinic.setArguments(homeBundle);
-        final ClinicFragment backupClinic= new ClinicFragment();
-        final Bundle backupBundle = new Bundle();
-        backupBundle.putString("place-id", "ChIJBfUi1W8E9YgR8OaV1LSrqLs");
-        backupClinic.setArguments(backupBundle);
+        final String homePlaceId = "ChIJ5btcA5AE9YgRFAYcKNHxumU";
+        final String backupPlaceId = "ChIJBfUi1W8E9YgR8OaV1LSrqLs";
 
         mFragmentManager = getSupportFragmentManager();
+        mFragmentManager.executePendingTransactions();
+        if (savedInstanceState == null) {
+            // create clinic_fragment fragments
+            homeClinic = new ClinicFragment();
+            Bundle homeBundle = new Bundle();
+            homeBundle.putString("place-id", homePlaceId);
+            homeClinic.setArguments(homeBundle);
+
+            backupClinic= new ClinicFragment();
+            final Bundle backupBundle = new Bundle();
+            backupBundle.putString("place-id", backupPlaceId);
+            backupClinic.setArguments(backupBundle);
+
+            FragmentTransaction transaction = mFragmentManager.beginTransaction();
+            transaction.add(R.id.containerView, homeClinic);
+            transaction.add(R.id.containerView, backupClinic);
+            transaction.hide(backupClinic);
+            transaction.commit();
+            currentTab = homeClinic;
+        } else {
+            currentPlaceId = savedInstanceState.getString("currentPlaceId");
+            for (int i = 0; i < mFragmentManager.getFragments().size(); i++) {
+                Fragment fragment = mFragmentManager.getFragments().get(i);
+                if (fragment instanceof ClinicFragment) {
+                    String fragmentPlace = fragment.getArguments().getString("place-id");
+                    if (fragmentPlace.equals(homePlaceId)) {
+                        homeClinic = (ClinicFragment)fragment;
+                    } else if (fragmentPlace.equals(backupPlaceId)) {
+                        backupClinic = (ClinicFragment) fragment;
+                    }
+                    if (fragmentPlace.equals(currentPlaceId)) {
+                        currentTab = fragment;
+                    }
+                }
+            }
+            Log.d("Current Fragment", currentTab.toString());
+            Log.d("Fragments", mFragmentManager.getFragments().toString());
+
+        }
 
 
         bottomNavigationView.setOnNavigationItemSelectedListener(new BottomNavigationView.OnNavigationItemSelectedListener() {
             @Override
             public boolean onNavigationItemSelected(@NonNull MenuItem item) {
-                GooglePlace clinic;
                 if (item.getItemId() == R.id.home_clinic) {
-                    String fragTag = homeClinic.getClass().getSimpleName();
-                    if (mFragmentManager.findFragmentByTag(fragTag) == null) {
-                        FragmentTransaction ftx = mFragmentManager.beginTransaction();
-                        ftx.addToBackStack(homeClinic.getClass().getSimpleName());
-                        ftx.add(R.id.containerView, homeClinic);
-                        ftx.commit();
-                    } else {
-                        boolean fragmentPopped = mFragmentManager
-                                .popBackStackImmediate(fragTag, 0);
-                        if (!fragmentPopped && mFragmentManager.findFragmentByTag(fragTag) == null) {
-
-                            FragmentTransaction ftx = mFragmentManager.beginTransaction();
-                            ftx.addToBackStack(homeClinic.getClass().getSimpleName());
-                            ftx.hide(backupClinic);
-                            ftx.show(homeClinic);
-                            ftx.commit();
-                        }
-                    }
+                    FragmentTransaction ftx = mFragmentManager.beginTransaction();
+                    ftx.hide(currentTab).show(homeClinic).commit();
+                    currentTab = homeClinic;
+                    currentPlaceId = homePlaceId;
+                    Log.d("Selected", "TAB 1");
                 } else if(item.getItemId() == R.id.backup_clinic) {
-                    String fragTag = backupClinic.getClass().getSimpleName();
-                    if (mFragmentManager.findFragmentByTag(fragTag) == null) {
-                        FragmentTransaction ftx = mFragmentManager.beginTransaction();
-                        ftx.addToBackStack(backupClinic.getClass().getSimpleName());
-                        ftx.hide(homeClinic);
-                        ftx.add(R.id.containerView, backupClinic);
-                        ftx.commit();
-                    } else {
-                        boolean fragmentPopped = mFragmentManager
-                                .popBackStackImmediate(fragTag, 0);
-                        if (!fragmentPopped && mFragmentManager.findFragmentByTag(fragTag) == null) {
-
-                            FragmentTransaction ftx = mFragmentManager.beginTransaction();
-                            ftx.addToBackStack(backupClinic.getClass().getSimpleName());
-                            ftx.hide(homeClinic);
-                            ftx.show(backupClinic);
-                            ftx.commit();
-                        }
-                    }
+                    FragmentTransaction ftx = mFragmentManager.beginTransaction();
+                    ftx.hide(currentTab).show(backupClinic).commit();
+                    currentTab = backupClinic;
+                    currentPlaceId = backupPlaceId;
+                    Log.d("Selected", "TAB 2");
                 } else if(item.getItemId() == R.id.nearby_clinics) {
-
                 }
                 return true;
 
             }
         });
-        BottomNavigationView bottomNavigationView = findViewById(R.id.bottom_nav);
-        bottomNavigationView.setSelectedItemId(R.id.home_clinic);
-
+        if (savedInstanceState == null) {
+            BottomNavigationView bottomNavigationView = findViewById(R.id.bottom_nav);
+            bottomNavigationView.setSelectedItemId(R.id.home_clinic);
+        }
 
 
         // Setup click events on the Navigation View Items
-
         mNavigationView.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
             @Override
             public boolean onNavigationItemSelected(MenuItem item) {
@@ -198,22 +204,30 @@ public class HomeScreenActivity extends AppCompatActivity {
                     startActivity(loginScreen);
                     finish();
                 }
-
                 return false;
             }
         });
-
-        // Setup Drawer Toggle of the Toolbar
-//        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-//        setSupportActionBar(toolbar);
-//        ActionBarDrawerToggle mDrawerToggle = new ActionBarDrawerToggle(this, mDrawerLayout, toolbar, R.string.app_name, R.string.app_name);
-//        mDrawerLayout.addDrawerListener(mDrawerToggle);
-//        mDrawerToggle.syncState();
-
-
     }
 
-
+    @Override
+    public void onSaveInstanceState(Bundle savedInstanceState) {
+        super.onSaveInstanceState(savedInstanceState);
+        savedInstanceState.putString("currentPlaceId", currentPlaceId);
+    }
+//
+//    @Override
+//    protected void onPause() {
+//        super.onPause();
+//        mFragmentManager = getSupportFragmentManager();
+//        FragmentTransaction transaction = mFragmentManager.beginTransaction();
+//        transaction.remove(homeClinic).remove(backupClinic).commit();
+//    }
+//
+//    @Override
+//    protected void onResume() {
+//        super.onResume();
+//
+//    }
 
     @Override
     public void setTitle(CharSequence title) {

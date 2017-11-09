@@ -16,7 +16,7 @@ import java.lang.reflect.Type;
  */
 
 public class GooglePlace {
-    private String place_id;
+    private String placeId;
     private String name;
     private double rating;
     private String address;
@@ -93,12 +93,12 @@ public class GooglePlace {
     }
 
 
-    public String getPlace_id() {
-        return place_id;
+    public String getPlaceId() {
+        return placeId;
     }
 
-    public void setPlace_id(String place_id) {
-        this.place_id = place_id;
+    public void setPlaceId(String place_id) {
+        this.placeId = placeId;
     }
 
     public String getName() {
