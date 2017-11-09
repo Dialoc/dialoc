@@ -151,7 +151,7 @@ public class LoginScreen extends AppCompatActivity {
             } else {
                 // Google Sign In failed, update UI appropriately
                 // ...
-                Log.d(TAG, "Google Auth Failed!");
+                Log.d(TAG, result.getStatus().toString());
             }
         }
     }

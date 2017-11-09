@@ -2,6 +2,7 @@ package com.example.owner.dialoc;
 
 import android.util.Log;
 
+import com.google.gson.JsonArray;
 import com.google.gson.JsonDeserializationContext;
 import com.google.gson.JsonDeserializer;
 import com.google.gson.JsonElement;
@@ -15,13 +16,42 @@ import java.lang.reflect.Type;
  */
 
 public class GooglePlace {
-    private String place_id;
+    private String placeId;
     private String name;
     private double rating;
     private String address;
     private String international_phone_number;
     private double lat;
     private double lng;
+    private String[] photoArray;
+
+    public String getWebsite() {
+        return website;
+    }
+
+    public void setWebsite(String website) {
+        this.website = website;
+    }
+
+    private String website;
+
+    public String[] getOpenHours() {
+        return openHours;
+    }
+
+    public void setOpenHours(String[] openHours) {
+        this.openHours = openHours;
+    }
+
+    private String[] openHours;
+
+    public String[] getPhotoArray() {
+        return photoArray;
+    }
+
+    public void setPhotoArray(String[] photoArray) {
+        this.photoArray = photoArray;
+    }
 
     public static class GooglePlaceDeserializer implements JsonDeserializer<GooglePlace> {
         public GooglePlace deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context)
@@ -32,6 +62,25 @@ public class GooglePlace {
             place.setRating(obj.get("rating").getAsDouble());
             place.setInternational_phone_number(obj.get("international_phone_number").getAsString());
             place.setAddress(obj.get("formatted_address").getAsString());
+            String[] photoRefs;
+            if (obj.get("photos") != null) {
+                JsonArray array = obj.get("photos").getAsJsonArray();
+                photoRefs = new String[array.size() + 1];
+                for (int i = 0; i < array.size(); i++) {
+                    photoRefs[i] = array.get(0).getAsJsonObject().get("photo_reference").getAsString();
+                }
+            } else {
+                photoRefs = new String[1];
+            }
+            photoRefs[photoRefs.length - 1] = "http://i.imgur.com/DvpvklR.png";
+            place.setPhotoArray(photoRefs);
+            JsonArray hours = obj.get("opening_hours").getAsJsonObject().get("weekday_text").getAsJsonArray();
+            String[] op_hours = new String[hours.size()];
+            for (int i = 0;i < hours.size(); i++) {
+                op_hours[i] = hours.get(i).getAsString();
+            }
+            place.setOpenHours(op_hours);
+            place.setWebsite(obj.get("website").getAsString());
             return place;
         }
     }
@@ -44,12 +93,12 @@ public class GooglePlace {
     }
 
 
-    public String getPlace_id() {
-        return place_id;
+    public String getPlaceId() {
+        return placeId;
     }
 
-    public void setPlace_id(String place_id) {
-        this.place_id = place_id;
+    public void setPlaceId(String place_id) {
+        this.placeId = placeId;
     }
 
     public String getName() {
