@@ -1,33 +1,239 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.design.widget.CoordinatorLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<android.support.v4.widget.NestedScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:fitsSystemWindows="true">
-    <android.support.design.widget.AppBarLayout
+    app:layout_behavior="@string/appbar_scrolling_view_behavior">
+
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:id="@+id/bar_layout"
-        app:theme="@style/AppTheme.AppBarOverlay">
-        <!--<android.support.design.widget.CollapsingToolbarLayout-->
-            <!--android:id="@+id/toolbar_layout"-->
-            <!--android:layout_width="match_parent"-->
-            <!--android:layout_height="match_parent"-->
-            <!--android:fitsSystemWindows="true"-->
-            <!--app:contentScrim="?attr/colorPrimary"-->
-            <!--app:layout_scrollFlags="scroll|exitUntilCollapsed">-->
+        android:orientation="vertical">
 
-            <android.support.v7.widget.Toolbar
-                android:id="@+id/toolbar"
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+            <android.support.v4.view.ViewPager
                 android:layout_width="match_parent"
-                android:layout_height="?attr/actionBarSize"
-                app:layout_collapseMode="pin"
-                app:popupTheme="@style/AppTheme.PopupOverlay"/>
-        <!--</android.support.design.widget.CollapsingToolbarLayout>-->
-    </android.support.design.widget.AppBarLayout>
-    <include layout="@layout/clinic_content" />
+                android:layout_height="300dp"
+                android:background="@android:color/black"
+                android:id="@+id/gallery"
+                android:layout_alignParentTop="true"
+                android:layout_alignParentLeft="true"
+                android:layout_alignParentStart="true" />
+
+            <android.support.design.widget.TabLayout
+                android:id="@+id/tabDots"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_alignParentBottom="true"
+                app:tabBackground="@drawable/tab_selector"
+                app:tabGravity="center"
+                android:layout_gravity="bottom"
+                android:layout_alignBottom="@id/gallery"
+                app:tabIndicatorHeight="0dp" />
+        </RelativeLayout>
 
 
-</android.support.design.widget.CoordinatorLayout>
+
+        <LinearLayout
+            android:baselineAligned="false"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/clinic_detail_offset_top"
+            android:orientation="horizontal">
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:id="@+id/map_button"
+                android:orientation="vertical">
+
+                <ImageView
+                    android:layout_marginTop="5dp"
+                    android:layout_width="48dp"
+                    android:layout_height="48dp"
+                    android:src="@drawable/ic_map_black_24dp" />
+
+                <TextView
+                    android:layout_marginTop="5dp"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Directions" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:id="@+id/call_button"
+                android:orientation="vertical">
+
+                <ImageView
+                    android:layout_marginTop="5dp"
+                    android:layout_width="48dp"
+                    android:layout_height="48dp"
+                    android:src="@drawable/ic_phone_black_24dp" />
+
+                <TextView
+                    android:layout_marginTop="5dp"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Call" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:id="@+id/favorite_button"
+                android:orientation="vertical">
+
+                <ImageView
+                    android:layout_marginTop="5dp"
+                    android:id="@+id/home_favorites"
+                    android:layout_width="48dp"
+                    android:layout_height="48dp"
+                    android:src="@drawable/ic_favorite_border_black_24dp" />
+                <TextView
+                    android:layout_marginTop="5dp"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Favorite" />
+            </LinearLayout>
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:id="@+id/share_button"
+                android:orientation="vertical">
+
+                <ImageView
+                    android:layout_marginTop="5dp"
+                    android:id="@+id/share_icon"
+                    android:layout_width="48dp"
+                    android:layout_height="48dp"
+                    android:src="@drawable/ic_share_black_24dp" />
+                <TextView
+                    android:layout_marginTop="5dp"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Share" />
+            </LinearLayout>
+        </LinearLayout>
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:maxLines="5"
+            android:layout_marginTop="@dimen/clinic_detail_offset_top"
+            android:paddingRight="5dp"
+            android:paddingLeft="@dimen/clinic_detail_offset_left"
+            android:text="@string/large_text"/>
+        <LinearLayout
+            android:layout_marginTop="@dimen/clinic_detail_offset_top"
+            android:layout_width="match_parent"
+            android:id="@+id/address_layout"
+            android:layout_height="wrap_content">
+            <ImageView
+                android:layout_width="30dp"
+                android:layout_height="30dp"
+                android:layout_marginRight="15dp"
+                android:layout_marginLeft="@dimen/clinic_detail_offset_left"
+                android:src="@drawable/ic_place_black_24dp"/>
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="14sp"
+                android:layout_gravity="center_vertical"
+                android:id="@+id/dialysis_clinic_address"
+                android:text="Some Address"/>
+        </LinearLayout>
+        <LinearLayout
+            android:layout_marginTop="@dimen/clinic_detail_offset_top"
+            android:layout_width="match_parent"
+            android:id="@+id/open_hours_layout"
+            android:layout_height="wrap_content">
+            <ImageView
+                android:layout_width="30dp"
+                android:layout_height="30dp"
+                android:layout_marginLeft="@dimen/clinic_detail_offset_left"
+                android:layout_marginRight="15dp"
+                android:src="@drawable/ic_access_time_black_24dp"/>
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="14sp"
+                android:layout_gravity="center_vertical"
+                android:id="@+id/open_hours"
+                android:text="Open times for the day"/>
+        </LinearLayout>
+        <LinearLayout
+            android:layout_marginTop="@dimen/clinic_detail_offset_top"
+            android:layout_width="match_parent"
+            android:id="@+id/phone_layout"
+            android:layout_height="wrap_content">
+            <ImageView
+                android:layout_width="30dp"
+                android:layout_height="30dp"
+                android:layout_marginRight="15dp"
+                android:layout_marginLeft="@dimen/clinic_detail_offset_left"
+                android:src="@drawable/ic_phone_black_24dp"/>
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="14sp"
+                android:id="@+id/dialysis_clinic_phone_number"
+                android:layout_gravity="center_vertical"
+                android:text="Some phone number "/>
+        </LinearLayout>
+        <LinearLayout
+            android:layout_marginTop="@dimen/clinic_detail_offset_top"
+            android:layout_width="match_parent"
+            android:id="@+id/web_layout"
+            android:layout_height="wrap_content">
+            <ImageView
+                android:layout_width="30dp"
+                android:layout_height="30dp"
+                android:layout_marginLeft="@dimen/clinic_detail_offset_left"
+                android:layout_marginRight="15dp"
+                android:src="@drawable/ic_web_black_24dp"/>
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="14sp"
+                android:id="@+id/website_url"
+                android:layout_gravity="center_vertical"
+                android:text="Some url"/>
+        </LinearLayout>
+        <LinearLayout
+            android:layout_marginTop="@dimen/clinic_detail_offset_top"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+            <ImageView
+                android:layout_width="30dp"
+                android:layout_height="30dp"
+                android:layout_marginRight="15dp"
+                android:layout_marginLeft="@dimen/clinic_detail_offset_left"
+                android:src="@drawable/ic_edit_black_24dp"/>
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="14sp"
+                android:id="@+id/edit_suggestion"
+                android:layout_gravity="center_vertical"
+                android:text="Suggest an edit"/>
+        </LinearLayout>
+        <!--<TextView-->
+            <!--android:layout_width="wrap_content"-->
+            <!--android:layout_height="wrap_content"-->
+            <!--android:layout_margin="@dimen/text_margin"-->
+            <!--android:text="@string/large_text" />-->
+    </LinearLayout>
+
+
+</android.support.v4.widget.NestedScrollView>

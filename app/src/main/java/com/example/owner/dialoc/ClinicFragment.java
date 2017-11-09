@@ -13,6 +13,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.Menu;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
@@ -37,13 +38,7 @@ import retrofit2.converter.gson.GsonConverterFactory;
 public class ClinicFragment extends Fragment {
 
     private ImageView clinicImage;
-
-
-    public GooglePlace getClinic() {
-        return clinic;
-    }
-
-    private GooglePlace clinic;
+    private GooglePlace homeClinic;
 
     // Objects on screen
     private TextView dialysisClinicName;
@@ -51,6 +46,7 @@ public class ClinicFragment extends Fragment {
     private TextView dialysisClinicPhoneNumber;
     private TextView dialysisClinicWebsiteNA;
     private TextView dialysisClinicAddress;
+    private ImageView profileAvatar;
     private TextView dialysisClinicHours;
     private TextView dialysisCinicUrl;
     private ViewPager viewPager;
@@ -72,7 +68,6 @@ public class ClinicFragment extends Fragment {
 
     public ClinicFragment() {
     }
-
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -143,8 +138,6 @@ public class ClinicFragment extends Fragment {
         // Set up image gallery
         viewPager = view.findViewById(R.id.gallery);
         viewPager.setAdapter(new ImagePagerAdapter(getContext(), new String[0]));
-//        CollapsingToolbarLayout collapsingToolbarLayout = view.findViewById(R.id.toolbar_layout);
-//        collapsingToolbarLayout.setTitleEnabled(false);
         TabLayout tabLayout = view.findViewById(R.id.tabDots);
         tabLayout.setupWithViewPager(viewPager, true);
 

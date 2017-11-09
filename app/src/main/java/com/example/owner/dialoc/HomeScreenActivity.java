@@ -49,6 +49,7 @@ import com.google.android.gms.maps.StreetViewPanorama;
 import com.google.android.gms.maps.StreetViewPanoramaFragment;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -70,6 +71,7 @@ public class HomeScreenActivity extends AppCompatActivity {
     private FragmentManager mFragmentManager;
     private FragmentTransaction mFragmentTransaction;
     private BottomNavigationView bottomNavigationView;
+    private FirebaseAuth mAuth;
 
     private ImageView placeImageView;
     private Fragment currentTab;
@@ -214,20 +216,8 @@ public class HomeScreenActivity extends AppCompatActivity {
         super.onSaveInstanceState(savedInstanceState);
         savedInstanceState.putString("currentPlaceId", currentPlaceId);
     }
-//
-//    @Override
-//    protected void onPause() {
-//        super.onPause();
-//        mFragmentManager = getSupportFragmentManager();
-//        FragmentTransaction transaction = mFragmentManager.beginTransaction();
-//        transaction.remove(homeClinic).remove(backupClinic).commit();
-//    }
-//
-//    @Override
-//    protected void onResume() {
-//        super.onResume();
-//
-//    }
+
+
 
     @Override
     public void setTitle(CharSequence title) {

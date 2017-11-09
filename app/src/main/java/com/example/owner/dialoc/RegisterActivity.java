@@ -79,6 +79,8 @@ public class RegisterActivity extends AppCompatActivity {
         mDatabase = FirebaseDatabase.getInstance().getReference();
         mDatabase.child("/users/" + user.getUid() + "/first-name").setValue(firstnView.getText().toString());
         mDatabase.child("/users/" + user.getUid() + "/last-name").setValue(lastnView.getText().toString());
+        String fullName = firstnView.getText().toString() + " " + lastnView.getText().toString();
+        mDatabase.child("/users/" + user.getUid() + "/first-last-name").setValue(fullName);
     }
 
     /**
