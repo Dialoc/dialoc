@@ -143,9 +143,9 @@ public class ClinicFragment extends Fragment {
         // Set up image gallery
         viewPager = view.findViewById(R.id.gallery);
         viewPager.setAdapter(new ImagePagerAdapter(getContext(), new String[0]));
-        CollapsingToolbarLayout collapsingToolbarLayout = view.findViewById(R.id.toolbar_layout);
-        collapsingToolbarLayout.setTitleEnabled(false);
-        TabLayout tabLayout = (TabLayout) view.findViewById(R.id.tabDots);
+//        CollapsingToolbarLayout collapsingToolbarLayout = view.findViewById(R.id.toolbar_layout);
+//        collapsingToolbarLayout.setTitleEnabled(false);
+        TabLayout tabLayout = view.findViewById(R.id.tabDots);
         tabLayout.setupWithViewPager(viewPager, true);
 
         // Set toolbar
