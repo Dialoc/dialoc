@@ -21,6 +21,8 @@ import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
+import org.w3c.dom.Text;
+
 public class RegisterActivity extends AppCompatActivity {
 
     private final String TAG = "RegisterActivity";
@@ -28,6 +30,10 @@ public class RegisterActivity extends AppCompatActivity {
     private TextInputEditText passwordView;
     private TextInputEditText firstnView;
     private TextInputEditText lastnView;
+    private TextInputEditText ageView;
+    private TextInputEditText heightView;
+    private TextInputEditText weightView;
+
     private Intent loginScreenIntent;
     private Button registerButton;
     private FirebaseAuth mAuth;
@@ -40,6 +46,10 @@ public class RegisterActivity extends AppCompatActivity {
         passwordView = (TextInputEditText) findViewById(R.id.password);
         firstnView = (TextInputEditText) findViewById(R.id.first_name);
         lastnView = (TextInputEditText) findViewById(R.id.last_name);
+        ageView = (TextInputEditText) findViewById(R.id.age);
+        heightView = (TextInputEditText) findViewById(R.id.height);
+        weightView = (TextInputEditText) findViewById(R.id.weight);
+
         loginScreenIntent = new Intent(this, LoginScreen.class);
         registerButton = (Button) findViewById(R.id.register_button);
         mAuth = FirebaseAuth.getInstance();
@@ -81,6 +91,9 @@ public class RegisterActivity extends AppCompatActivity {
         mDatabase.child("/users/" + user.getUid() + "/last-name").setValue(lastnView.getText().toString());
         String fullName = firstnView.getText().toString() + " " + lastnView.getText().toString();
         mDatabase.child("/users/" + user.getUid() + "/first-last-name").setValue(fullName);
+        mDatabase.child("/users/" + user.getUid() + "/age").setValue(ageView.getText().toString());
+        mDatabase.child("/users/" + user.getUid() + "/height").setValue(heightView.getText().toString());
+        mDatabase.child("/users/" + user.getUid() + "/weight").setValue(weightView.getText().toString());
     }
 
     /**

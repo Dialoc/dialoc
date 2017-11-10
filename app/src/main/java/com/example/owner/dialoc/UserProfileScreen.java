@@ -77,9 +77,12 @@ public class UserProfileScreen extends AppCompatActivity {
 
     public void getUserProfileInformation() {
         getFirstLastName();
+        getAge();
+        getHeight();
+        getWeight();
     }
 
-    public String getFirstLastName() {
+    public void getFirstLastName() {
         DatabaseReference ref = mDatabase.child("/users/" + currentUser.getUid() + "/first-last-name");
         ref.addValueEventListener(new ValueEventListener() {
             @Override
@@ -97,46 +100,63 @@ public class UserProfileScreen extends AppCompatActivity {
                 firstName = "";
             }
         });
-
-        return firstName;
     }
-//
-//    public String getFirstName() {
-//        DatabaseReference ref = mDatabase.child("/users/" + currentUser.getUid() + "/first-name");
-//        ref.addValueEventListener(new ValueEventListener() {
-//            @Override
-//            public void onDataChange(DataSnapshot dataSnapshot) {
-//                String name = dataSnapshot.getValue(String.class);
-//                System.out.println("User First Name: " + name);
-//                firstName =  name;
-//            }
-//
-//            @Override
-//            public void onCancelled(DatabaseError databaseError) {
-//                System.out.println("The read failed: " + databaseError.getCode());
-//                firstName = "";
-//            }
-//        });
-//
-//        return firstName;
-//    }
-//
-//    public String getLastName() {
-//        DatabaseReference ref = mDatabase.child("/users/" + currentUser.getUid() + "/last-name");
-//        ref.addValueEventListener(new ValueEventListener() {
-//            @Override
-//            public void onDataChange(DataSnapshot dataSnapshot) {
-//                String name = dataSnapshot.getValue(String.class);
-//                System.out.println("User Last Name: " + name);
-//                lastName = name;
-//            }
-//
-//            @Override
-//            public void onCancelled(DatabaseError databaseError) {
-//                System.out.println("The read failed: " + databaseError.getCode());
-//                lastName = "";
-//            }
-//        });
-//        return lastName;
-//    }
+
+    public void getAge() {
+        DatabaseReference ref = mDatabase.child("/users/" + currentUser.getUid() + "/age");
+        ref.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                String age = dataSnapshot.getValue(String.class);
+                System.out.println("User Age: " + age);
+                String ageText = "Age: " + age;
+                TextView userProfileAge = (TextView) findViewById(R.id.user_profile_age);
+                userProfileAge.setText(ageText);
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+                System.out.println("The read failed: " + databaseError.getCode());
+            }
+        });
+    }
+
+    public void getHeight() {
+        DatabaseReference ref = mDatabase.child("/users/" + currentUser.getUid() + "/height");
+        ref.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                String height = dataSnapshot.getValue(String.class);
+                System.out.println("User Height: " + height);
+                String heightText = "Height: " + height + "\"";
+                TextView userProfileAge = (TextView) findViewById(R.id.user_profile_height);
+                userProfileAge.setText(heightText);
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+                System.out.println("The read failed: " + databaseError.getCode());
+            }
+        });
+    }
+
+    public void getWeight() {
+        DatabaseReference ref = mDatabase.child("/users/" + currentUser.getUid() + "/weight");
+        ref.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                String weight = dataSnapshot.getValue(String.class);
+                System.out.println("User Weight: " + weight);
+                String weightText = "Weight: " + weight + " lbs";
+                TextView userProfileAge = (TextView) findViewById(R.id.user_profile_weight);
+                userProfileAge.setText(weightText);
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+                System.out.println("The read failed: " + databaseError.getCode());
+                firstName = "";
+            }
+        });
+    }
 }
