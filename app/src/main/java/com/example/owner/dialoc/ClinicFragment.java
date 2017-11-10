@@ -3,22 +3,22 @@ package com.example.owner.dialoc;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
-import android.text.SpannableString;
-import android.text.style.UnderlineSpan;
+import android.support.v4.view.ViewPager;
+import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.LayoutInflater;
-import android.view.Menu;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.ViewTreeObserver;
-import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import com.squareup.picasso.Picasso;
+
+import java.util.Calendar;
 
 import okhttp3.ResponseBody;
 import retrofit2.Call;
@@ -33,122 +33,155 @@ import retrofit2.converter.gson.GsonConverterFactory;
 public class ClinicFragment extends Fragment {
 
     private ImageView clinicImage;
-    private GooglePlace homeClinic;
+
+    public GooglePlace getClinic() {
+        return clinic;
+    }
+
+    private GooglePlace clinic;
 
     // Objects on screen
     private TextView dialysisClinicName;
     private TextView dialysisClinicRating;
-    private TextView dialysisClinicPhone;
     private TextView dialysisClinicPhoneNumber;
     private TextView dialysisClinicWebsiteNA;
     private TextView dialysisClinicAddress;
     private ImageView profileAvatar;
+    private TextView dialysisClinicHours;
+    private TextView dialysisCinicUrl;
+    private ViewPager viewPager;
+    private Toolbar toolbar;
     private static final String TAG = "ClinicFragment";
 
 
-    private Button btnShare;
+    private LinearLayout shareButton;
+    private LinearLayout mapButton;
+    private LinearLayout addressLayout;
+    private LinearLayout phoneButton;
+    private LinearLayout phoneLayout;
+    private LinearLayout web_layout;
     private Intent shareIntent;
+
+    GooglePlaceAPI googlePlaceAPI;
+    Gson gson;
+    View view;
 
     public ClinicFragment() {
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        // Set up request to Places Web Service using retrofit
+        super.onCreateView(inflater, container, savedInstanceState);
+
+        Retrofit retrofit = new Retrofit.Builder()
+                .baseUrl("https://maps.googleapis.com/")
+                .addConverterFactory(GsonConverterFactory.create())
+                .build();
+        googlePlaceAPI = retrofit.create(GooglePlaceAPI.class);
+        GsonBuilder builder = new GsonBuilder();
+        builder.registerTypeAdapter(GooglePlace.class, new GooglePlace.GooglePlaceDeserializer());
+        gson = builder.create();
 
         // Inflate fragment and assign views
-        View view = inflater.inflate(R.layout.clinic_fragment, container, false);
-        dialysisClinicName = view.findViewById(R.id.dialysis_clinic_name);
-        dialysisClinicRating = view.findViewById(R.id.dialysis_clinic_rating);
-        dialysisClinicPhone =  view.findViewById(R.id.dialysis_clinic_phone);
+        view = inflater.inflate(R.layout.clinic_fragment, container, false);
         dialysisClinicPhoneNumber =  view.findViewById(R.id.dialysis_clinic_phone_number);
-        dialysisClinicWebsiteNA =  view.findViewById(R.id.dialysis_clinic_website_na);
         dialysisClinicAddress =  view.findViewById(R.id.dialysis_clinic_address);
-        clinicImage = view.findViewById(R.id.clinic_image);
-        btnShare = view.findViewById(R.id.share_button);
-        profileAvatar = view.findViewById(R.id.profile_avatar);
+        dialysisClinicHours = view.findViewById(R.id.open_hours);
+        dialysisCinicUrl = view.findViewById(R.id.website_url);
+        shareButton = view.findViewById(R.id.share_button);
+        mapButton = view.findViewById(R.id.map_button);
+        addressLayout = view.findViewById(R.id.address_layout);
+        phoneButton = view.findViewById(R.id.call_button);
+        web_layout = view.findViewById(R.id.web_layout);
 
-        // Navigation to listed address
-        dialysisClinicAddress.setOnClickListener(new View.OnClickListener() {
+
+        View.OnClickListener navigationListener = new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 Intent geoIntent = new Intent(Intent.ACTION_VIEW, Uri.parse("geo:0,0?q="
                         + dialysisClinicAddress.getText().toString()));
                 startActivity(geoIntent);
             }
+        };
+
+        mapButton.setOnClickListener(navigationListener);
+        addressLayout.setOnClickListener(navigationListener);
+
+        phoneButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(Intent.ACTION_DIAL, Uri.fromParts("tel", dialysisClinicPhoneNumber.getText().toString(), null));
+                startActivity(intent);
+
+            }
+        });
+
+        web_layout.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(dialysisCinicUrl.getText().toString()));
+                startActivity(intent);
+            }
         });
 
         // Share status
-        btnShare.setOnClickListener(new View.OnClickListener() {
+        shareButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 shareIntent = new Intent(Intent.ACTION_SEND);
                 shareIntent.setType("text/plain");
                 shareIntent.putExtra(Intent.EXTRA_TEXT, "I am currently at: "
-                        + dialysisClinicName.getText());
+                        + clinic.getName());
                 startActivity(Intent.createChooser(shareIntent, "Share via"));
             }
         });
 
-        // Navigate to User Profile Screen
-        profileAvatar.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent intent = new Intent(getActivity(), UserProfileScreen.class);
-                startActivity(intent);
-            }
-        });
+        // Set up image gallery
+        viewPager = view.findViewById(R.id.gallery);
+        viewPager.setAdapter(new ImagePagerAdapter(getContext(), new String[0]));
+        TabLayout tabLayout = view.findViewById(R.id.tabDots);
+        tabLayout.setupWithViewPager(viewPager, true);
 
-        // Find proper dimensions of the view to request picture of street
-        ViewTreeObserver vto = clinicImage.getViewTreeObserver();
-        vto.addOnPreDrawListener(new ViewTreeObserver.OnPreDrawListener() {
-            public boolean onPreDraw() {
-                // Remove after the first run
-                clinicImage.getViewTreeObserver().removeOnPreDrawListener(this);
-                int height = clinicImage.getMeasuredHeight();
-                int width = clinicImage.getMeasuredWidth();
-                String request = "https://maps.googleapis.com/maps/api/streetview?size=" + width +
-                        "x" + height + "&location=33.771683,-84.406718&heading=230&fov=80&key=" +
-                        getString(R.string.google_api_key);
-                Picasso.with(getContext()).load(request).fit().into(clinicImage);
-                return true;
-            }
-        });
+        // Set toolbar
 
-        // Get details of clinic
-        Retrofit retrofit = new Retrofit.Builder()
-                .baseUrl("https://maps.googleapis.com/")
-                .addConverterFactory(GsonConverterFactory.create())
-                .build();
+        setClinic();
+        return view;
+    }
 
-        GooglePlaceAPI gpa = retrofit.create(GooglePlaceAPI.class);
-        Call<ResponseBody> call = gpa.getDetails(getArguments().getString("place"),
-                                                getString(R.string.google_api_key));
-        GsonBuilder builder = new GsonBuilder();
-        builder.registerTypeAdapter(GooglePlace.class, new GooglePlace.GooglePlaceDeserializer());
-        final Gson gson = builder.create();
+    /**
+     * Method to populate Fragment with relevant information
+     */
+    void populateClinicInfo() {
+        getActivity().setTitle(clinic.getName());
+        viewPager.setAdapter(new ImagePagerAdapter(view.getContext(), clinic.getPhotoArray()));
+        dialysisClinicPhoneNumber.setText(clinic.getInternational_phone_number());
+        Calendar calendar = Calendar.getInstance();
+        dialysisClinicHours.setText(clinic.getOpenHours()[(calendar.get(Calendar.DAY_OF_WEEK) + 5) % 7]);
+        dialysisCinicUrl.setText(clinic.getWebsite());
+        dialysisClinicAddress.setText(clinic.getAddress());
+    }
+
+
+
+    void setClinic() {
+        String placeId = getArguments().getString("place-id");
+        Call<ResponseBody> call = googlePlaceAPI.getDetails(placeId, getString(R.string.google_api_key));
         call.enqueue(new Callback<ResponseBody>() {
             @Override
             public void onResponse(Call<ResponseBody> call,
                                    retrofit2.Response<ResponseBody> response) {
-                homeClinic = gson.fromJson(response.body().charStream(), GooglePlace.class);
-                dialysisClinicName.setText(homeClinic.getName());
-                dialysisClinicRating.setText(homeClinic.getRating() + "/5");
-                dialysisClinicPhoneNumber.setText(homeClinic.getInternational_phone_number());
-                // Setting the address to look and behave like a link
-                SpannableString dialysisClinicAddressSpannable = new SpannableString(homeClinic
-                        .getAddress());
-                dialysisClinicAddressSpannable
-                        .setSpan(new UnderlineSpan(), 0,
-                                dialysisClinicAddressSpannable.length(), 0);
-                dialysisClinicAddress.setText(dialysisClinicAddressSpannable);
+                Log.d("HTTP Response", response.toString());
+                if (response.isSuccessful()) {
+                    clinic = gson.fromJson(response.body().charStream(), GooglePlace.class);
+                    populateClinicInfo();
+                }
             }
-
             @Override
             public void onFailure(Call<ResponseBody> call, Throwable t) {
                 Log.e("HTTP Request", t.getMessage());
             }
         });
-        return view;
     }
 
 }
