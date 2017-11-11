@@ -31,7 +31,11 @@ package="com.example.owner.dialoc">
     <activity android:name=".RegisterActivity"/>
     <activity android:name=".UserProfileScreen"
         android:parentActivityName=".HomeScreenActivity"/>
+        <activity android:name=".SearchClinics"
+            android:parentActivityName=".HomeScreenActivity"/>
+        <activity android:name=".ClinicActivity"
+            android:parentActivityName=".SearchClinics"/>
 
-</application>
+    </application>
 
 </manifest>

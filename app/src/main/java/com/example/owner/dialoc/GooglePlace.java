@@ -58,10 +58,17 @@ public class GooglePlace {
                 throws JsonParseException {
             JsonObject obj = json.getAsJsonObject().get("result").getAsJsonObject();
             GooglePlace place = new GooglePlace();
+            place.setPlaceId(obj.get("place_id").getAsString());
             place.setName(obj.get("name").getAsString());
-            place.setRating(obj.get("rating").getAsDouble());
-            place.setInternational_phone_number(obj.get("international_phone_number").getAsString());
-            place.setAddress(obj.get("formatted_address").getAsString());
+            if (obj.get("rating") != null) {
+                place.setRating(obj.get("rating").getAsDouble());
+            }
+            if (obj.get("international_phone_number") != null) {
+                place.setInternational_phone_number(obj.get("international_phone_number").getAsString());
+            }
+            if (obj.get("formatted_address") != null) {
+                place.setAddress(obj.get("formatted_address").getAsString());
+            }
             String[] photoRefs;
             if (obj.get("photos") != null) {
                 JsonArray array = obj.get("photos").getAsJsonArray();
@@ -74,13 +81,17 @@ public class GooglePlace {
             }
             photoRefs[photoRefs.length - 1] = "http://i.imgur.com/DvpvklR.png";
             place.setPhotoArray(photoRefs);
-            JsonArray hours = obj.get("opening_hours").getAsJsonObject().get("weekday_text").getAsJsonArray();
-            String[] op_hours = new String[hours.size()];
-            for (int i = 0;i < hours.size(); i++) {
-                op_hours[i] = hours.get(i).getAsString();
+            if (obj.get("opening_hours") != null) {
+                JsonArray hours = obj.get("opening_hours").getAsJsonObject().get("weekday_text").getAsJsonArray();
+                String[] op_hours = new String[hours.size()];
+                for (int i = 0; i < hours.size(); i++) {
+                    op_hours[i] = hours.get(i).getAsString();
+                }
+                place.setOpenHours(op_hours);
             }
-            place.setOpenHours(op_hours);
-            place.setWebsite(obj.get("website").getAsString());
+            if (obj.get("website") != null) {
+                place.setWebsite(obj.get("website").getAsString());
+            }
             return place;
         }
     }
@@ -97,7 +108,7 @@ public class GooglePlace {
         return placeId;
     }
 
-    public void setPlaceId(String place_id) {
+    public void setPlaceId(String placeId) {
         this.placeId = placeId;
     }
 

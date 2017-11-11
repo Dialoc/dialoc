@@ -192,8 +192,8 @@ public class HomeScreenActivity extends AppCompatActivity {
                     FragmentTransaction fragmentTransaction = mFragmentManager.beginTransaction();
                     fragmentTransaction.replace(R.id.containerView, new TabFragment()).commit();
                 } else if (item.getItemId() == R.id.nav_search) {
-                    FragmentTransaction fragmentTransaction = mFragmentManager.beginTransaction();
-                    fragmentTransaction.replace(R.id.containerView, new TabFragment()).commit();
+                    Intent searchScreen = new Intent(HomeScreenActivity.this, SearchClinics.class);
+                    startActivity(searchScreen);
                 } else if (item.getItemId() == R.id.nav_notifications) {
                     FragmentTransaction fragmentTransaction = mFragmentManager.beginTransaction();
                     fragmentTransaction.replace(R.id.containerView, new TabFragment()).commit();

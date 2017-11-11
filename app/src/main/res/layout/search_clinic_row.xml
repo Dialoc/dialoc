@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@drawable/row_border">
+
+    <android.support.v4.view.ViewPager
+        android:layout_width="60dp"
+        android:layout_height="60dp"
+        android:id="@+id/search_clinic_avatar"
+        android:layout_alignParentLeft="true"
+        android:layout_marginLeft="10dp"
+        android:layout_marginTop="10dp"
+        android:layout_marginBottom="10dp"/>
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/search_clinic_name"
+        android:layout_toRightOf="@+id/search_clinic_avatar"
+        android:layout_marginTop="15dp"
+        android:layout_marginLeft="10dp"
+        android:textColor="#000000"
+        android:text="Rahul Raina"
+        android:textSize="15dp"/>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/search_clinic_address"
+        android:paddingBottom="5dp"
+        android:layout_toRightOf="@id/search_clinic_avatar"
+        android:layout_below="@+id/search_clinic_name"
+        android:layout_marginTop="10dp"
+        android:layout_marginLeft="10dp"
+        android:text="610 Northside Dr NW, Atlanta, GA 30318"/>
+
+</RelativeLayout>
