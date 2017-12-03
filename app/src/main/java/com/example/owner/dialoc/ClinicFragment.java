@@ -17,11 +17,14 @@ import android.support.v4.view.ViewPager;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.PopupMenu;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -80,11 +83,15 @@ public class ClinicFragment extends Fragment {
     private LinearLayout web_layout;
     private LinearLayout favoriteButton;
     private ImageView favorite;
+    private LinearLayout reportButton;
     private Intent shareIntent;
 
     GooglePlaceAPI googlePlaceAPI;
     Gson gson;
     View view;
+
+    private DatabaseReference mDatabase;
+
 
     public ClinicFragment() {
     }
@@ -114,6 +121,9 @@ public class ClinicFragment extends Fragment {
         addressLayout = view.findViewById(R.id.address_layout);
         phoneButton = view.findViewById(R.id.call_button);
         web_layout = view.findViewById(R.id.web_layout);
+        reportButton = view.findViewById(R.id.report_button);
+
+        mDatabase = FirebaseDatabase.getInstance().getReference();
         favoriteButton = view.findViewById(R.id.favorite_button);
         favorite = view.findViewById(R.id.home_favorites);
 
@@ -218,6 +228,50 @@ public class ClinicFragment extends Fragment {
 
             }
         });
+
+
+        reportButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                PopupMenu menu = new PopupMenu(getContext(), view);
+                menu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
+                    @Override
+                    public boolean onMenuItemClick(MenuItem menuItem) {
+                        switch(menuItem.getItemId()) {
+                            case R.id.open_status:
+                                mDatabase.child("/clinics/" + curPlaceId + "/status/" + user.getUid()).setValue(menuItem.getTitle());
+                                Toast.makeText(getActivity(), "Open", Toast.LENGTH_SHORT).show();
+                                break;
+                            case R.id.natural_disaster_status:
+                                mDatabase.child("/clinics/" + curPlaceId + "/status/" + user.getUid()).setValue(menuItem.getTitle());
+                                Toast.makeText(getActivity(), "Natural Disaster", Toast.LENGTH_SHORT).show();
+                                break;
+                            case R.id.power_outage_status:
+                                mDatabase.child("/clinics/" + curPlaceId + "/status/" + user.getUid()).setValue(menuItem.getTitle());
+                                Toast.makeText(getActivity(), "Power Outage", Toast.LENGTH_SHORT).show();
+                                break;
+                            case R.id.holiday_status:
+                                mDatabase.child("/clinics/" + curPlaceId + "/status/" + user.getUid()).setValue(menuItem.getTitle());
+                                Toast.makeText(getActivity(), "Holiday", Toast.LENGTH_SHORT).show();
+                                break;
+                            case R.id.permanently_closed_status:
+                                mDatabase.child("/clinics/" + curPlaceId + "/status/" + user.getUid()).setValue(menuItem.getTitle());
+                                Toast.makeText(getActivity(), "Permanent Close", Toast.LENGTH_SHORT).show();
+                                break;
+                            case R.id.other_status:
+                                mDatabase.child("/clinics/" + curPlaceId + "/status/" + user.getUid()).setValue(menuItem.getTitle());
+                                Toast.makeText(getActivity(), "Other", Toast.LENGTH_SHORT).show();
+                                break;
+                        }
+                        return false;
+                    }
+                });
+
+                menu.inflate(R.menu.report_menu);
+                menu.show();
+            }
+        });
+
 
         // Set up image gallery
         viewPager = view.findViewById(R.id.gallery);

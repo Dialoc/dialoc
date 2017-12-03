@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item
+        android:id="@+id/open_status"
+        android:title="Clinic is Open" />
+
+    <item
+        android:id="@+id/natural_disaster_status"
+        android:title="Clinic closed due to natural disaster" />
+
+    <item
+        android:id="@+id/power_outage_status"
+        android:title="Clinic closed due to power outage" />
+
+    <item
+        android:id="@+id/holiday_status"
+        android:title="Clinic closed due to holiday" />
+
+    <item
+        android:id="@+id/permanently_closed_status"
+        android:title="Clinic is permanently closed" />
+
+    <item
+        android:id="@+id/other_status"
+        android:title="Clinic closed due to other reasons" />
+</menu>
