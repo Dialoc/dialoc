@@ -1,13 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
-<menu xmlns:android="http://schemas.android.com/apk/res/android">
+<menu xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:android="http://schemas.android.com/apk/res/android">
 
     <item
-        android:id="@+id/home_clinic"
+        android:id="@+id/set_home_clinic"
         android:icon="@drawable/ic_home_black_24dp"
         android:title="Set to Home" />
 
     <item
-        android:id="@+id/backup_clinic"
+        android:id="@+id/set_backup_clinic"
         android:icon="@drawable/ic_replay_black_24dp"
         android:title="Set to Backup" />
 

@@ -30,6 +30,7 @@ import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.MenuItem;
 import android.widget.ImageView;
+import android.widget.TextView;
 
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
@@ -56,6 +57,11 @@ import com.google.android.gms.maps.StreetViewPanoramaFragment;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonArray;
@@ -90,12 +96,17 @@ public class HomeScreenActivity extends AppCompatActivity {
     private FragmentManager mFragmentManager;
     private FragmentTransaction mFragmentTransaction;
     private BottomNavigationView bottomNavigationView;
+    private String userId;
     private FirebaseAuth mAuth;
+    private FirebaseUser currentUser;
+    private DatabaseReference mDatabase;
 
     private ImageView placeImageView;
     private Fragment currentTab;
     private ClinicFragment homeClinic;
     private ClinicFragment backupClinic;
+    private String homePlaceId = "";
+    private String backupPlaceId = "";
     private NearbyClinicsFragment nearbyClinics;
 
     private String currentPlaceId;
@@ -113,8 +124,23 @@ public class HomeScreenActivity extends AppCompatActivity {
         mDrawerLayout = findViewById(R.id.drawerLayout);
         mNavigationView = findViewById(R.id.navigationView);
         bottomNavigationView = findViewById(R.id.bottom_nav);
-        final String homePlaceId = "ChIJ5btcA5AE9YgRFAYcKNHxumU";
-        final String backupPlaceId = "ChIJBfUi1W8E9YgR8OaV1LSrqLs";
+
+        mAuth = FirebaseAuth.getInstance();
+        currentUser = mAuth.getCurrentUser();
+        userId = "";
+        if (currentUser != null) {
+            userId = currentUser.getUid();
+            mDatabase = FirebaseDatabase.getInstance().getReference();
+            getHomeClinic();
+            getBackupClinic();
+        }
+
+        if (homePlaceId.equals("")) {
+            homePlaceId = "ChIJ5btcA5AE9YgRFAYcKNHxumU";
+        }
+        if (backupPlaceId.equals("")) {
+            backupPlaceId = "ChIJBfUi1W8E9YgR8OaV1LSrqLs";
+        }
 
         mFragmentManager = getSupportFragmentManager();
         mFragmentManager.executePendingTransactions();
@@ -246,6 +272,43 @@ public class HomeScreenActivity extends AppCompatActivity {
                     finish();
                 }
                 return false;
+            }
+        });
+    }
+
+    public void getHomeClinic() {
+        DatabaseReference ref = mDatabase.child("/users/" + currentUser.getUid() + "/home-clinic");
+
+        ref.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                String homeClinic = dataSnapshot.getValue(String.class);
+                System.out.println("Home Clinic ID: " + homeClinic);
+                homePlaceId =  homeClinic;
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+                System.out.println("The read failed: " + databaseError.getCode());
+                homePlaceId = "";
+            }
+        });
+    }
+
+    public void getBackupClinic() {
+        DatabaseReference ref = mDatabase.child("/users/" + currentUser.getUid() + "/backup-clinic");
+        ref.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                String backupClinic = dataSnapshot.getValue(String.class);
+                System.out.println("Backup Clinic ID: " + backupClinic);
+                backupPlaceId =  backupClinic;
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+                System.out.println("The read failed: " + databaseError.getCode());
+                backupPlaceId = "";
             }
         });
     }

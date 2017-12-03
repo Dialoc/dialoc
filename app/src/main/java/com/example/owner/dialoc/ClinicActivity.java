@@ -109,6 +109,7 @@ public class ClinicActivity extends AppCompatActivity {
             placeID = extras.getString("PLACE_ID");
         }
 
+
         View.OnClickListener navigationListener = new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -205,10 +206,40 @@ public class ClinicActivity extends AppCompatActivity {
 
     }
 
+    private void storeHomeClinic() {
+        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+        mDatabase = FirebaseDatabase.getInstance().getReference();
+        mDatabase.child("/users/" + user.getUid() + "/home-clinic").setValue("PLACE_ID");
+    }
+
+    private void storeBackupClinic() {
+        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+        mDatabase = FirebaseDatabase.getInstance().getReference();
+        mDatabase.child("/users/" + user.getUid() + "/backup-clinic").setValue("PLACE_ID");
+    }
+
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.set_clinic_menu, menu);
         return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        // Handle action bar item clicks here. The action bar will
+        // automatically handle clicks on the Home/Up button, so long
+        // as you specify a parent activity in AndroidManifest.xml.
+        int id = item.getItemId();
+
+        //noinspection SimplifiableIfStatement
+        if (id == R.id.set_home_clinic) {
+            storeHomeClinic();
+            return true;
+        } else if (id == R.id.set_backup_clinic) {
+            storeBackupClinic();
+            return true;
+        }
+        return super.onOptionsItemSelected(item);
     }
 
     void populateClinicInfo() {
