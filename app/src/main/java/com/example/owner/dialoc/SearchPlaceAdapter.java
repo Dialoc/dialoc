@@ -85,7 +85,7 @@ public class SearchPlaceAdapter extends RecyclerView.Adapter<SearchPlaceAdapter.
         holder.avatar.setAdapter(new ImagePagerAdapter(holder.itemView.getContext(), result.getPhotoArray()));
 
         holder.name.setText(result.getName());
-        holder.address.setText(result.getAddress());
+        holder.address.setText(result.getDistance());
     }
 
     @Override

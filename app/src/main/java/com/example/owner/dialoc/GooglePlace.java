@@ -23,6 +23,16 @@ public class GooglePlace {
     private String international_phone_number;
     private double lat;
     private double lng;
+
+    public String getDistance() {
+        return distance;
+    }
+
+    public void setDistance(String distance) {
+        this.distance = distance;
+    }
+
+    private String distance;
     private String[] photoArray;
 
     public String getWebsite() {
@@ -56,7 +66,7 @@ public class GooglePlace {
     public static class GooglePlaceDeserializer implements JsonDeserializer<GooglePlace> {
         public GooglePlace deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context)
                 throws JsonParseException {
-            JsonObject obj = json.getAsJsonObject().get("result").getAsJsonObject();
+            JsonObject obj = json.getAsJsonObject();
             GooglePlace place = new GooglePlace();
             place.setPlaceId(obj.get("place_id").getAsString());
             place.setName(obj.get("name").getAsString());
@@ -91,6 +101,11 @@ public class GooglePlace {
             }
             if (obj.get("website") != null) {
                 place.setWebsite(obj.get("website").getAsString());
+            }
+            if (obj.get("geometry") != null && obj.get("geometry").getAsJsonObject().get("location") != null) {
+                JsonObject locObj = obj.get("geometry").getAsJsonObject().get("location").getAsJsonObject();
+                place.setLat(locObj.get("lat").getAsDouble());
+                place.setLng(locObj.get("lng").getAsDouble());
             }
             return place;
         }

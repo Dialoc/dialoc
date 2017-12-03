@@ -17,6 +17,9 @@ import android.widget.TextView;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 
 import java.util.Calendar;
 
@@ -173,7 +176,9 @@ public class ClinicFragment extends Fragment {
                                    retrofit2.Response<ResponseBody> response) {
                 Log.d("HTTP Response", response.toString());
                 if (response.isSuccessful()) {
-                    clinic = gson.fromJson(response.body().charStream(), GooglePlace.class);
+                    JsonParser parser = new JsonParser();
+                    JsonObject place = parser.parse(response.body().charStream()).getAsJsonObject().get("result").getAsJsonObject();
+                    clinic = gson.fromJson(place, GooglePlace.class);
                     populateClinicInfo();
                 }
             }
