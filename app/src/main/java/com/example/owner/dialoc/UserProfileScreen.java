@@ -36,6 +36,8 @@ public class UserProfileScreen extends AppCompatActivity {
     private EditText addressField;
     private EditText bioField;
 
+    private boolean editMode = false;
+
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -90,14 +92,20 @@ public class UserProfileScreen extends AppCompatActivity {
 
         //noinspection SimplifiableIfStatement
         if (id == R.id.user_profile_edit) {
-            Toast.makeText(UserProfileScreen.this, "Action clicked", Toast.LENGTH_LONG).show();
 
-            nameField.setEnabled(true);
-            ageField.setEnabled(true);
-            heightField.setEnabled(true);
-            weightField.setEnabled(true);
-            addressField.setEnabled(true);
-            bioField.setEnabled(true);
+            if (!editMode) {
+                Toast.makeText(UserProfileScreen.this, "Action clicked", Toast.LENGTH_LONG).show();
+
+                nameField.setEnabled(true);
+                ageField.setEnabled(true);
+                heightField.setEnabled(true);
+                weightField.setEnabled(true);
+                addressField.setEnabled(true);
+                bioField.setEnabled(true);
+            } else {
+                
+            }
+
             return true;
         }
 
