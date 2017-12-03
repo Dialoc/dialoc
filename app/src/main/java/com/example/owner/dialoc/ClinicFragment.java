@@ -171,10 +171,12 @@ public class ClinicFragment extends Fragment {
 
 
         FirebaseAuth mAuth = FirebaseAuth.getInstance();
-        FirebaseUser currentUser = mAuth.getCurrentUser();
-        if (currentUser != null) {
+        final FirebaseUser user = mAuth.getCurrentUser();
+        final String curPlaceId = getArguments().getString("place-id");
+
+        if (user != null) {
             DatabaseReference mDatabase = FirebaseDatabase.getInstance().getReference();
-            final DatabaseReference ref = mDatabase.child("/users/" + currentUser.getUid() + "/favorites/" + getArguments().getString("place-id"));
+            final DatabaseReference ref = mDatabase.child("/users/" + user.getUid() + "/favorites/" + getArguments().getString("place-id"));
             ref.addListenerForSingleValueEvent(new ValueEventListener() {
                 @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
                 @Override
