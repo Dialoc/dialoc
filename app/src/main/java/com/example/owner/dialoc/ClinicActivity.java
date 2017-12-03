@@ -9,11 +9,18 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.PopupMenu;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
@@ -56,7 +63,11 @@ public class ClinicActivity extends AppCompatActivity {
     private LinearLayout phoneButton;
     private LinearLayout phoneLayout;
     private LinearLayout web_layout;
+    private LinearLayout reportButton;
     private Intent shareIntent;
+
+    private DatabaseReference mDatabase;
+    private String placeID;
 
 
     private Toolbar toolbar;
@@ -89,6 +100,14 @@ public class ClinicActivity extends AppCompatActivity {
         addressLayout = findViewById(R.id.address_layout);
         phoneButton = findViewById(R.id.call_button);
         web_layout = findViewById(R.id.web_layout);
+        reportButton = findViewById(R.id.report_button);
+
+        mDatabase = FirebaseDatabase.getInstance().getReference();
+
+        Bundle extras = getIntent().getExtras();
+        if (extras != null) {
+            placeID = extras.getString("PLACE_ID");
+        }
 
         View.OnClickListener navigationListener = new View.OnClickListener() {
             @Override
@@ -130,14 +149,57 @@ public class ClinicActivity extends AppCompatActivity {
             }
         });
 
+        final FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+
+        reportButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                PopupMenu menu = new PopupMenu(ClinicActivity.this, view);
+                menu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
+                    @Override
+                    public boolean onMenuItemClick(MenuItem menuItem) {
+                        switch(menuItem.getItemId()) {
+                            case R.id.open_status:
+                                mDatabase.child("/clinics/" + placeID + "/status/" + user.getUid()).setValue(menuItem.getTitle());
+                                Toast.makeText(ClinicActivity.this, "Open", Toast.LENGTH_SHORT).show();
+                                break;
+                            case R.id.natural_disaster_status:
+                                mDatabase.child("/clinics/" + placeID + "/status/" + user.getUid()).setValue(menuItem.getTitle());
+                                Toast.makeText(ClinicActivity.this, "Natural Disaster", Toast.LENGTH_SHORT).show();
+                                break;
+                            case R.id.power_outage_status:
+                                mDatabase.child("/clinics/" + placeID + "/status/" + user.getUid()).setValue(menuItem.getTitle());
+                                Toast.makeText(ClinicActivity.this, "Power Outage", Toast.LENGTH_SHORT).show();
+                                break;
+                            case R.id.holiday_status:
+                                mDatabase.child("/clinics/" + placeID + "/status/" + user.getUid()).setValue(menuItem.getTitle());
+                                Toast.makeText(ClinicActivity.this, "Holiday", Toast.LENGTH_SHORT).show();
+                                break;
+                            case R.id.permanently_closed_status:
+                                mDatabase.child("/clinics/" + placeID + "/status/" + user.getUid()).setValue(menuItem.getTitle());
+                                Toast.makeText(ClinicActivity.this, "Permanent Close", Toast.LENGTH_SHORT).show();
+                                break;
+                            case R.id.other_status:
+                                mDatabase.child("/clinics/" + placeID + "/status/" + user.getUid()).setValue(menuItem.getTitle());
+                                Toast.makeText(ClinicActivity.this, "Other", Toast.LENGTH_SHORT).show();
+                                break;
+                        }
+                        return false;
+                    }
+                });
+
+                menu.inflate(R.menu.report_menu);
+                menu.show();
+            }
+        });
+
         viewPager = findViewById(R.id.gallery);
         viewPager.setAdapter(new ImagePagerAdapter(this, new String[0]));
         TabLayout tabLayout = findViewById(R.id.tabDots);
         tabLayout.setupWithViewPager(viewPager, true);
 
-        Bundle extras = getIntent().getExtras();
         if (extras != null) {
-            getPlace(extras.getString("PLACE_ID"));
+            getPlace(placeID);
         }
 
 
