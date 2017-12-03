@@ -1,8 +1,16 @@
 package com.example.owner.dialoc;
 
+import android.annotation.TargetApi;
 import android.content.Intent;
+import android.graphics.Color;
+import android.graphics.ColorFilter;
+import android.graphics.PorterDuff;
+import android.graphics.drawable.Drawable;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
+import android.support.annotation.RequiresApi;
+import android.support.design.widget.Snackbar;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.view.ViewPager;
@@ -15,6 +23,13 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonArray;
@@ -63,6 +78,8 @@ public class ClinicFragment extends Fragment {
     private LinearLayout phoneButton;
     private LinearLayout phoneLayout;
     private LinearLayout web_layout;
+    private LinearLayout favoriteButton;
+    private ImageView favorite;
     private Intent shareIntent;
 
     GooglePlaceAPI googlePlaceAPI;
@@ -97,6 +114,8 @@ public class ClinicFragment extends Fragment {
         addressLayout = view.findViewById(R.id.address_layout);
         phoneButton = view.findViewById(R.id.call_button);
         web_layout = view.findViewById(R.id.web_layout);
+        favoriteButton = view.findViewById(R.id.favorite_button);
+        favorite = view.findViewById(R.id.home_favorites);
 
 
         View.OnClickListener navigationListener = new View.OnClickListener() {
@@ -140,6 +159,66 @@ public class ClinicFragment extends Fragment {
             }
         });
 
+
+        FirebaseAuth mAuth = FirebaseAuth.getInstance();
+        FirebaseUser currentUser = mAuth.getCurrentUser();
+        if (currentUser != null) {
+            DatabaseReference mDatabase = FirebaseDatabase.getInstance().getReference();
+            final DatabaseReference ref = mDatabase.child("/users/" + currentUser.getUid() + "/favorites/" + getArguments().getString("place-id"));
+            ref.addListenerForSingleValueEvent(new ValueEventListener() {
+                @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
+                @Override
+                public void onDataChange(DataSnapshot dataSnapshot) {
+                    if (dataSnapshot.getValue() != null) {
+                        Drawable d = getContext().getDrawable(R.drawable.ic_favorite_black_24dp);
+                        favorite.setImageDrawable(d);
+                    }
+                }
+
+                @Override
+                public void onCancelled(DatabaseError databaseError) {
+                    System.out.println("The read failed: " + databaseError.getCode());
+                }
+            });
+        }
+        favoriteButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View button) {
+                FirebaseAuth mAuth = FirebaseAuth.getInstance();
+                FirebaseUser currentUser = mAuth.getCurrentUser();
+                if (currentUser != null) {
+                    DatabaseReference mDatabase = FirebaseDatabase.getInstance().getReference();
+                    final DatabaseReference ref = mDatabase.child("/users/" + currentUser.getUid() + "/favorites/" + getArguments().getString("place-id"));
+                    ref.addListenerForSingleValueEvent(new ValueEventListener() {
+                        @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
+                        @Override
+                        public void onDataChange(DataSnapshot dataSnapshot) {
+                            Log.d(TAG, "made it here");
+                            if (dataSnapshot.getValue() == null) {
+                                Drawable d = getContext().getDrawable(R.drawable.ic_favorite_black_24dp);
+                                d.setColorFilter(Color.RED, PorterDuff.Mode.SRC_ATOP);
+                                favorite.setImageDrawable(d);
+                                ref.setValue(true);
+                            } else {
+                                Drawable d = getContext().getDrawable(R.drawable.ic_favorite_border_black_24dp);
+                                favorite.setImageDrawable(d);
+                                ref.removeValue();
+                            }
+                        }
+
+                        @Override
+                        public void onCancelled(DatabaseError databaseError) {
+                            System.out.println("The read failed: " + databaseError.getCode());
+                        }
+                    });
+                } else {
+                    Snackbar mySnackbar = Snackbar.make(view, "Log in required!", Snackbar.LENGTH_SHORT);
+                    mySnackbar.show();
+                }
+
+            }
+        });
+
         // Set up image gallery
         viewPager = view.findViewById(R.id.gallery);
         viewPager.setAdapter(new ImagePagerAdapter(getContext(), new String[0]));
@@ -160,7 +239,11 @@ public class ClinicFragment extends Fragment {
         viewPager.setAdapter(new ImagePagerAdapter(view.getContext(), clinic.getPhotoArray()));
         dialysisClinicPhoneNumber.setText(clinic.getInternational_phone_number());
         Calendar calendar = Calendar.getInstance();
-        dialysisClinicHours.setText(clinic.getOpenHours()[(calendar.get(Calendar.DAY_OF_WEEK) + 5) % 7]);
+        if (clinic.getOpenHours() != null) {
+            dialysisClinicHours.setText(clinic.getOpenHours()[(calendar.get(Calendar.DAY_OF_WEEK) + 5) % 7]);
+        } else {
+            dialysisClinicHours.setText("Add Hours");
+        }
         dialysisCinicUrl.setText(clinic.getWebsite());
         dialysisClinicAddress.setText(clinic.getAddress());
     }

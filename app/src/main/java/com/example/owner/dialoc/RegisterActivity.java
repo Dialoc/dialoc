@@ -28,7 +28,7 @@ public class RegisterActivity extends AppCompatActivity {
     private final String TAG = "RegisterActivity";
     private TextInputEditText emailView;
     private TextInputEditText passwordView;
-    private TextInputEditText firstnView;
+    private EditText firstnView;
     private TextInputEditText lastnView;
     private TextInputEditText ageView;
     private TextInputEditText heightView;
@@ -44,7 +44,7 @@ public class RegisterActivity extends AppCompatActivity {
         setContentView(R.layout.activity_register);
         emailView = (TextInputEditText) findViewById(R.id.email);
         passwordView = (TextInputEditText) findViewById(R.id.password);
-        firstnView = (TextInputEditText) findViewById(R.id.first_name);
+        firstnView = findViewById(R.id.first_name);
         lastnView = (TextInputEditText) findViewById(R.id.last_name);
         ageView = (TextInputEditText) findViewById(R.id.age);
         heightView = (TextInputEditText) findViewById(R.id.height);
