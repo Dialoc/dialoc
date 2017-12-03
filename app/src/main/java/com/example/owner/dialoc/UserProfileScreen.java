@@ -5,6 +5,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -27,6 +28,13 @@ public class UserProfileScreen extends AppCompatActivity {
     private DatabaseReference mDatabase;
     private String firstName;
     private String lastName;
+
+    private EditText nameField;
+    private EditText ageField;
+    private EditText heightField;
+    private EditText weightField;
+    private EditText addressField;
+    private EditText bioField;
 
 
     @Override
@@ -51,6 +59,20 @@ public class UserProfileScreen extends AppCompatActivity {
             getUserProfileInformation();
         }
 
+        nameField = (EditText) (findViewById(R.id.user_profile_name));
+        ageField = (EditText) (findViewById(R.id.user_profile_age));
+        heightField = (EditText) (findViewById(R.id.user_profile_height));
+        weightField = (EditText) (findViewById(R.id.user_profile_weight));
+        addressField = (EditText) (findViewById(R.id.user_profile_home_address));
+        bioField = (EditText) (findViewById(R.id.user_profile_bio));
+
+        nameField.setEnabled(false);
+        ageField.setEnabled(false);
+        heightField.setEnabled(false);
+        weightField.setEnabled(false);
+        addressField.setEnabled(false);
+        bioField.setEnabled(false);
+
     }
 
     @Override
@@ -69,6 +91,13 @@ public class UserProfileScreen extends AppCompatActivity {
         //noinspection SimplifiableIfStatement
         if (id == R.id.user_profile_edit) {
             Toast.makeText(UserProfileScreen.this, "Action clicked", Toast.LENGTH_LONG).show();
+
+            nameField.setEnabled(true);
+            ageField.setEnabled(true);
+            heightField.setEnabled(true);
+            weightField.setEnabled(true);
+            addressField.setEnabled(true);
+            bioField.setEnabled(true);
             return true;
         }
 
