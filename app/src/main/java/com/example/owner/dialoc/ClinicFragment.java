@@ -6,6 +6,9 @@ import android.os.Bundle;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.view.ViewPager;
+import android.support.v7.widget.DefaultItemAnimator;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -20,15 +23,20 @@ import android.widget.Toast;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 
+import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.List;
 
 import okhttp3.ResponseBody;
 import retrofit2.Call;
@@ -78,6 +86,13 @@ public class ClinicFragment extends Fragment {
     View view;
 
     private DatabaseReference mDatabase;
+    private FirebaseUser user;
+    private String curPlaceId;
+
+
+    private RecyclerView recyclerView;
+    private UserReportAdapter userReportAdapter;
+    private List<UserReport> userReportList;
 
 
     public ClinicFragment() {
@@ -111,6 +126,15 @@ public class ClinicFragment extends Fragment {
         reportButton = view.findViewById(R.id.report_button);
 
         mDatabase = FirebaseDatabase.getInstance().getReference();
+
+        userReportList = new ArrayList<>();
+
+        recyclerView = (RecyclerView) view.findViewById(R.id.user_reports_recycler_view);
+        userReportAdapter = new UserReportAdapter(userReportList);
+        RecyclerView.LayoutManager mLayoutManger = new LinearLayoutManager(getContext());
+        recyclerView.setLayoutManager(mLayoutManger);
+        recyclerView.setItemAnimator(new DefaultItemAnimator());
+        recyclerView.setAdapter(userReportAdapter);
 
 
         View.OnClickListener navigationListener = new View.OnClickListener() {
@@ -154,8 +178,8 @@ public class ClinicFragment extends Fragment {
             }
         });
 
-        final FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
-        final String curPlaceId = getArguments().getString("place-id");
+        user = FirebaseAuth.getInstance().getCurrentUser();
+        curPlaceId = getArguments().getString("place-id");
 
         reportButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -208,6 +232,7 @@ public class ClinicFragment extends Fragment {
         // Set toolbar
 
         setClinic();
+        getUserReports();
         return view;
     }
 
@@ -224,6 +249,38 @@ public class ClinicFragment extends Fragment {
         dialysisClinicAddress.setText(clinic.getAddress());
     }
 
+    public void getUserReports() {
+        DatabaseReference ref = mDatabase.child("/clinics/" + curPlaceId + "/status");
+        ref.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                userReportList.clear();
+                Iterable<DataSnapshot> statuses = dataSnapshot.getChildren();
+                for (DataSnapshot status : statuses) {
+                    String value = (String) status.getValue();
+                    boolean changedCount = false;
+                    for (UserReport report : userReportList) {
+                        if (report.getReportType().equals(value)) {
+                            int curCount = report.getNumberOfReports();
+                            curCount++;
+                            report.setNumberOfReports(curCount);
+                            changedCount = true;
+                        }
+                    }
+                    if (!changedCount) {
+                        userReportList.add(new UserReport((String) status.getValue(), 1));
+                    }
+                    System.out.println("Status: " + value);
+                    userReportAdapter.notifyDataSetChanged();
+                }
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+                System.out.println("The read failed: " + databaseError.getCode());
+            }
+        });
+    }
 
 
     void setClinic() {
