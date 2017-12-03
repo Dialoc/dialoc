@@ -136,7 +136,9 @@ public class SearchClinics extends AppCompatActivity {
         if (requestCode == PLACE_AUTOCOMPLETE_REQUEST_CODE) {
             if (resultCode == RESULT_OK) {
                 Place place = PlaceAutocomplete.getPlace(this, data);
-                getClinicsNearPlace(place);
+                Intent intent = new Intent(this, ClinicActivity.class);
+                intent.putExtra("PLACE_ID", place.getId());
+                startActivity(intent);
 
             } else if (resultCode == PlaceAutocomplete.RESULT_ERROR) {
                 Status status = PlaceAutocomplete.getStatus(this, data);
@@ -163,13 +165,6 @@ public class SearchClinics extends AppCompatActivity {
                 try {
                     JSONArray jsonArray = response.getJSONArray("results");
                     System.out.println("Full Results: " + jsonArray);
-//                    JSONObject firstPlace = (JSONObject) jsonArray.get(1);
-//                    System.out.println("First Place: " + firstPlace);
-//                    String placeId = (String) firstPlace.get("place_id");
-////                    JSONArray photos = (JSONArray) firstPlace.get("photos");
-////                    String firstPhotoReference = (String) ((JSONObject) photos.get(0)).get("photo_reference");
-//                    System.out.println("Place ID: " + placeId);
-//                    Toast.makeText(SearchClinics.this, "Place ID: " + placeId, Toast.LENGTH_SHORT).show();
                     getPlacesInfo(jsonArray);
 
                 } catch (JSONException e) {

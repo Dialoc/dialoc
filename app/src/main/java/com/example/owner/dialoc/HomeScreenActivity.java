@@ -38,24 +38,39 @@ import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
 import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.GooglePlayServicesNotAvailableException;
+import com.google.android.gms.common.GooglePlayServicesRepairableException;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.location.places.Place;
 import com.google.android.gms.location.places.PlacePhotoMetadata;
 import com.google.android.gms.location.places.PlacePhotoMetadataBuffer;
 import com.google.android.gms.location.places.PlacePhotoMetadataResult;
 import com.google.android.gms.location.places.Places;
+import com.google.android.gms.location.places.ui.PlacePicker;
 import com.google.android.gms.maps.OnStreetViewPanoramaReadyCallback;
 import com.google.android.gms.maps.StreetViewPanorama;
 import com.google.android.gms.maps.StreetViewPanoramaFragment;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonParser;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.List;
+
+import okhttp3.ResponseBody;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Retrofit;
+import retrofit2.converter.gson.GsonConverterFactory;
 
 public class HomeScreenActivity extends AppCompatActivity {
 
@@ -77,6 +92,7 @@ public class HomeScreenActivity extends AppCompatActivity {
     private Fragment currentTab;
     private ClinicFragment homeClinic;
     private ClinicFragment backupClinic;
+    private NearbyClinicsFragment nearbyClinics;
 
     private String currentPlaceId;
 
@@ -110,10 +126,15 @@ public class HomeScreenActivity extends AppCompatActivity {
             backupBundle.putString("place-id", backupPlaceId);
             backupClinic.setArguments(backupBundle);
 
+            nearbyClinics = new NearbyClinicsFragment();
+
+
             FragmentTransaction transaction = mFragmentManager.beginTransaction();
             transaction.add(R.id.containerView, homeClinic);
             transaction.add(R.id.containerView, backupClinic);
+            transaction.add(R.id.containerView, nearbyClinics);
             transaction.hide(backupClinic);
+            transaction.hide(nearbyClinics);
             transaction.commit();
             currentTab = homeClinic;
         } else {
@@ -130,14 +151,15 @@ public class HomeScreenActivity extends AppCompatActivity {
                     if (fragmentPlace.equals(currentPlaceId)) {
                         currentTab = fragment;
                     }
+                } else if(fragment instanceof NearbyClinicsFragment) {
+                    nearbyClinics = (NearbyClinicsFragment) fragment;
+                    if (currentPlaceId.equals("nearby")) {
+                        currentTab = fragment;
+                    }
                 }
             }
         }
-//        Toolbar toolbar =  findViewById(R.id.toolbar);
-//        setSupportActionBar(toolbar);
-//        ActionBarDrawerToggle mDrawerToggle = new ActionBarDrawerToggle(this, mDrawerLayout, toolbar, R.string.app_name, R.string.app_name);
-//        mDrawerLayout.addDrawerListener(mDrawerToggle);
-//        mDrawerToggle.syncState();
+
         Toolbar toolbar = findViewById(R.id.toolbar);
         toolbar.setTitle("Home Clinic");
         setSupportActionBar(toolbar);
@@ -166,6 +188,12 @@ public class HomeScreenActivity extends AppCompatActivity {
                         setTitle(backupClinic.getClinic().getName());
                     }
                 } else if(item.getItemId() == R.id.nearby_clinics) {
+                    FragmentTransaction ftx = mFragmentManager.beginTransaction();
+                    ftx.hide(currentTab).show(nearbyClinics).commit();
+                    currentTab = nearbyClinics;
+                    currentPlaceId = "nearby";
+                    nearbyClinics.getNearbyClinics();
+                    setTitle("Nearby Clinics");
                 }
                 return true;
 
@@ -224,6 +252,11 @@ public class HomeScreenActivity extends AppCompatActivity {
         mTitle = title;
         getSupportActionBar().setTitle(mTitle);
     }
+
+
+
+
+
 
 
 }

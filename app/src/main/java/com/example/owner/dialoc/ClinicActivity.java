@@ -15,6 +15,8 @@ import android.widget.TextView;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 
 import java.util.Calendar;
 
@@ -146,7 +148,12 @@ public class ClinicActivity extends AppCompatActivity {
         viewPager.setAdapter(new ImagePagerAdapter(this, clinic.getPhotoArray()));
         dialysisClinicPhoneNumber.setText(clinic.getInternational_phone_number());
         Calendar calendar = Calendar.getInstance();
-        dialysisClinicHours.setText(clinic.getOpenHours()[(calendar.get(Calendar.DAY_OF_WEEK) + 5) % 7]);
+
+        if (clinic.getOpenHours() != null) {
+            dialysisClinicHours.setText(clinic.getOpenHours()[(calendar.get(Calendar.DAY_OF_WEEK) + 5) % 7]);
+        } else {
+            dialysisClinicHours.setText("Add Hours");
+        }
         dialysisCinicUrl.setText(clinic.getWebsite());
         dialysisClinicAddress.setText(clinic.getAddress());
     }
@@ -160,9 +167,10 @@ public class ClinicActivity extends AppCompatActivity {
                                    retrofit2.Response<ResponseBody> response) {
                 Log.d("HTTP Response", response.toString());
                 if (response.isSuccessful()) {
-                    clinic = gson.fromJson(response.body().charStream(), GooglePlace.class);
+                    JsonParser parser = new JsonParser();
+                    JsonObject place = parser.parse(response.body().charStream()).getAsJsonObject().get("result").getAsJsonObject();
+                    clinic = gson.fromJson(place, GooglePlace.class);
                     populateClinicInfo();
-
                 }
             }
             @Override
