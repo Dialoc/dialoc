@@ -41,12 +41,14 @@ import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GooglePlayServicesNotAvailableException;
 import com.google.android.gms.common.GooglePlayServicesRepairableException;
 import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.common.api.Status;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.location.places.Place;
 import com.google.android.gms.location.places.PlacePhotoMetadata;
 import com.google.android.gms.location.places.PlacePhotoMetadataBuffer;
 import com.google.android.gms.location.places.PlacePhotoMetadataResult;
 import com.google.android.gms.location.places.Places;
+import com.google.android.gms.location.places.ui.PlaceAutocomplete;
 import com.google.android.gms.location.places.ui.PlacePicker;
 import com.google.android.gms.maps.OnStreetViewPanoramaReadyCallback;
 import com.google.android.gms.maps.StreetViewPanorama;
@@ -78,6 +80,8 @@ public class HomeScreenActivity extends AppCompatActivity {
     // Tabs and Toolbar stuff
     private CharSequence mTitle;
     private CharSequence mDrawerTitle;
+    int PLACE_AUTOCOMPLETE_REQUEST_CODE = 141;
+
 
 
     // NEWEST NAVIGATION DRAWER STUFF WITH TABS
@@ -220,8 +224,15 @@ public class HomeScreenActivity extends AppCompatActivity {
                     FragmentTransaction fragmentTransaction = mFragmentManager.beginTransaction();
                     fragmentTransaction.replace(R.id.containerView, new TabFragment()).commit();
                 } else if (item.getItemId() == R.id.nav_search) {
-                    Intent searchScreen = new Intent(HomeScreenActivity.this, SearchClinics.class);
-                    startActivity(searchScreen);
+                    try {
+                        Intent intent = new PlaceAutocomplete.IntentBuilder(PlaceAutocomplete.MODE_FULLSCREEN)
+                                .build(HomeScreenActivity.this);
+                        startActivityForResult(intent, PLACE_AUTOCOMPLETE_REQUEST_CODE);
+                    } catch (GooglePlayServicesRepairableException e) {
+                        e.printStackTrace();
+                    } catch (GooglePlayServicesNotAvailableException e) {
+                        e.printStackTrace();
+                    }
                 } else if (item.getItemId() == R.id.nav_notifications) {
                     FragmentTransaction fragmentTransaction = mFragmentManager.beginTransaction();
                     fragmentTransaction.replace(R.id.containerView, new TabFragment()).commit();
@@ -253,6 +264,25 @@ public class HomeScreenActivity extends AppCompatActivity {
         getSupportActionBar().setTitle(mTitle);
     }
 
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (requestCode == PLACE_AUTOCOMPLETE_REQUEST_CODE) {
+            if (resultCode == RESULT_OK) {
+                Place place = PlaceAutocomplete.getPlace(this, data);
+                Intent intent = new Intent(this, ClinicActivity.class);
+                intent.putExtra("PLACE_ID", place.getId());
+                startActivity(intent);
+
+            } else if (resultCode == PlaceAutocomplete.RESULT_ERROR) {
+                Status status = PlaceAutocomplete.getStatus(this, data);
+                Log.i("AutoComplete", status.getStatusMessage());
+
+            } else if (resultCode == RESULT_CANCELED) {
+                // The user canceled the operation.
+            }
+        }
+    }
 
 
 
