@@ -9,12 +9,19 @@ import android.support.v4.view.ViewPager;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.PopupMenu;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonArray;
@@ -63,11 +70,15 @@ public class ClinicFragment extends Fragment {
     private LinearLayout phoneButton;
     private LinearLayout phoneLayout;
     private LinearLayout web_layout;
+    private LinearLayout reportButton;
     private Intent shareIntent;
 
     GooglePlaceAPI googlePlaceAPI;
     Gson gson;
     View view;
+
+    private DatabaseReference mDatabase;
+
 
     public ClinicFragment() {
     }
@@ -97,6 +108,9 @@ public class ClinicFragment extends Fragment {
         addressLayout = view.findViewById(R.id.address_layout);
         phoneButton = view.findViewById(R.id.call_button);
         web_layout = view.findViewById(R.id.web_layout);
+        reportButton = view.findViewById(R.id.report_button);
+
+        mDatabase = FirebaseDatabase.getInstance().getReference();
 
 
         View.OnClickListener navigationListener = new View.OnClickListener() {
@@ -137,6 +151,51 @@ public class ClinicFragment extends Fragment {
                 shareIntent.putExtra(Intent.EXTRA_TEXT, "I am currently at: "
                         + clinic.getName());
                 startActivity(Intent.createChooser(shareIntent, "Share via"));
+            }
+        });
+
+        final FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+        final String curPlaceId = getArguments().getString("place-id");
+
+        reportButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                PopupMenu menu = new PopupMenu(getContext(), view);
+                menu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
+                    @Override
+                    public boolean onMenuItemClick(MenuItem menuItem) {
+                        switch(menuItem.getItemId()) {
+                            case R.id.open_status:
+                                mDatabase.child("/clinics/" + curPlaceId + "/status/" + user.getUid()).setValue(menuItem.getTitle());
+                                Toast.makeText(getActivity(), "Open", Toast.LENGTH_SHORT).show();
+                                break;
+                            case R.id.natural_disaster_status:
+                                mDatabase.child("/clinics/" + curPlaceId + "/status/" + user.getUid()).setValue(menuItem.getTitle());
+                                Toast.makeText(getActivity(), "Natural Disaster", Toast.LENGTH_SHORT).show();
+                                break;
+                            case R.id.power_outage_status:
+                                mDatabase.child("/clinics/" + curPlaceId + "/status/" + user.getUid()).setValue(menuItem.getTitle());
+                                Toast.makeText(getActivity(), "Power Outage", Toast.LENGTH_SHORT).show();
+                                break;
+                            case R.id.holiday_status:
+                                mDatabase.child("/clinics/" + curPlaceId + "/status/" + user.getUid()).setValue(menuItem.getTitle());
+                                Toast.makeText(getActivity(), "Holiday", Toast.LENGTH_SHORT).show();
+                                break;
+                            case R.id.permanently_closed_status:
+                                mDatabase.child("/clinics/" + curPlaceId + "/status/" + user.getUid()).setValue(menuItem.getTitle());
+                                Toast.makeText(getActivity(), "Permanent Close", Toast.LENGTH_SHORT).show();
+                                break;
+                            case R.id.other_status:
+                                mDatabase.child("/clinics/" + curPlaceId + "/status/" + user.getUid()).setValue(menuItem.getTitle());
+                                Toast.makeText(getActivity(), "Other", Toast.LENGTH_SHORT).show();
+                                break;
+                        }
+                        return false;
+                    }
+                });
+
+                menu.inflate(R.menu.report_menu);
+                menu.show();
             }
         });
 
