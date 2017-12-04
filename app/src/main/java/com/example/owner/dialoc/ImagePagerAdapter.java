@@ -1,6 +1,7 @@
 package com.example.owner.dialoc;
 
 import android.content.Context;
+import android.content.Intent;
 import android.support.v4.view.PagerAdapter;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -56,7 +57,8 @@ public class ImagePagerAdapter extends PagerAdapter {
         imageView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Toast.makeText(context, "you clicked image " + (position + 1), Toast.LENGTH_LONG).show();
+                Intent intent = new Intent(v.getContext(), PanoramaActivity.class);
+                v.getContext().startActivity(intent);
             }
         });
 
