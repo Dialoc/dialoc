@@ -221,18 +221,11 @@ public class HomeScreenActivity extends AppCompatActivity {
                     FragmentTransaction fragmentTransaction = mFragmentManager.beginTransaction();
                     fragmentTransaction.replace(R.id.containerView, new TabFragment()).commit();
                 } else if (item.getItemId() == R.id.nav_favorites) {
-                    FragmentTransaction fragmentTransaction = mFragmentManager.beginTransaction();
-                    fragmentTransaction.replace(R.id.containerView, new TabFragment()).commit();
+                    Intent favoritesScreen = new Intent(HomeScreenActivity.this, FavoritesActivity.class);
+                    startActivity(favoritesScreen);
                 } else if (item.getItemId() == R.id.nav_search) {
-                    try {
-                        Intent intent = new PlaceAutocomplete.IntentBuilder(PlaceAutocomplete.MODE_FULLSCREEN)
-                                .build(HomeScreenActivity.this);
-                        startActivityForResult(intent, PLACE_AUTOCOMPLETE_REQUEST_CODE);
-                    } catch (GooglePlayServicesRepairableException e) {
-                        e.printStackTrace();
-                    } catch (GooglePlayServicesNotAvailableException e) {
-                        e.printStackTrace();
-                    }
+                    Intent searchScreen = new Intent(HomeScreenActivity.this, SearchClinics.class);
+                    startActivity(searchScreen);
                 } else if (item.getItemId() == R.id.nav_notifications) {
                     FragmentTransaction fragmentTransaction = mFragmentManager.beginTransaction();
                     fragmentTransaction.replace(R.id.containerView, new TabFragment()).commit();

@@ -1,5 +1,6 @@
 package com.example.owner.dialoc;
 
+import android.support.annotation.NonNull;
 import android.util.Log;
 
 import com.google.gson.JsonArray;
@@ -15,7 +16,7 @@ import java.lang.reflect.Type;
  * Created by thomas on 10/23/17.
  */
 
-public class GooglePlace {
+public class GooglePlace implements Comparable<GooglePlace> {
     private String placeId;
     private String name;
     private double rating;
@@ -61,6 +62,11 @@ public class GooglePlace {
 
     public void setPhotoArray(String[] photoArray) {
         this.photoArray = photoArray;
+    }
+
+    @Override
+    public int compareTo(@NonNull GooglePlace googlePlace) {
+        return this.name.compareTo(googlePlace.name);
     }
 
     public static class GooglePlaceDeserializer implements JsonDeserializer<GooglePlace> {
