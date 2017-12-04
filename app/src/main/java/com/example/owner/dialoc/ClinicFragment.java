@@ -1,11 +1,16 @@
 package com.example.owner.dialoc;
 
 import android.annotation.TargetApi;
+import android.app.Notification;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
+import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.ColorFilter;
 import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
+import android.media.RingtoneManager;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -31,6 +36,7 @@ import android.widget.Toast;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -195,7 +201,7 @@ public class ClinicFragment extends Fragment {
 
         if (user != null) {
             DatabaseReference mDatabase = FirebaseDatabase.getInstance().getReference();
-            final DatabaseReference ref = mDatabase.child("/users/" + user.getUid() + "/favorites/" + getArguments().getString("place-id"));
+            DatabaseReference ref = mDatabase.child("/users/" + user.getUid() + "/favorites/" + getArguments().getString("place-id"));
             ref.addListenerForSingleValueEvent(new ValueEventListener() {
                 @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
                 @Override
@@ -203,6 +209,41 @@ public class ClinicFragment extends Fragment {
                     if (dataSnapshot.getValue() != null) {
                         Drawable d = getContext().getDrawable(R.drawable.ic_favorite_black_24dp);
                         favorite.setImageDrawable(d);
+                    }
+                }
+
+                @Override
+                public void onCancelled(DatabaseError databaseError) {
+                    System.out.println("The read failed: " + databaseError.getCode());
+                }
+            });
+
+
+            ref = mDatabase.child("/clinics/"+ getArguments().getString("place-id") + "/status");
+            ref.addValueEventListener(new ValueEventListener() {
+                @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN)
+                @Override
+                public void onDataChange(DataSnapshot dataSnapshot) {
+                    if (dataSnapshot.getValue() != null) {
+                        int count = dataSnapshot.child("count").getValue(int.class);
+                        if (count >= 1) {
+                            Intent intent = new Intent(getContext(), ClinicActivity.class);
+                            intent.putExtra("PLACE_ID", getArguments().getString("place-id"));
+                            PendingIntent pendingIntent = PendingIntent.getActivity(getContext(), 1, intent, PendingIntent.FLAG_ONE_SHOT);
+                            Uri defaultSoundUri= RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
+                            Notification.Builder builder = new Notification.Builder(getContext());
+                            builder.setContentTitle("Closure Alert");
+                            builder.setContentText(clinic.getName() + " may be closed. Tap for more info");
+                            builder.setContentIntent(pendingIntent);
+                            builder.setSmallIcon(R.drawable.ic_notifications_black_24dp);
+                            builder.setAutoCancel(true);
+                            builder.setPriority(Notification.PRIORITY_HIGH);
+                            builder.setSound(defaultSoundUri);
+                            Notification notification = builder.build();
+                            NotificationManager notificationManger =
+                                    (NotificationManager) getActivity().getSystemService(Context.NOTIFICATION_SERVICE);
+                            notificationManger.notify(1, notification);
+                        }
                     }
                 }
 
@@ -332,21 +373,23 @@ public class ClinicFragment extends Fragment {
                 userReportList.clear();
                 Iterable<DataSnapshot> statuses = dataSnapshot.getChildren();
                 for (DataSnapshot status : statuses) {
-                    String value = (String) status.getValue();
-                    boolean changedCount = false;
-                    for (UserReport report : userReportList) {
-                        if (report.getReportType().equals(value)) {
-                            int curCount = report.getNumberOfReports();
-                            curCount++;
-                            report.setNumberOfReports(curCount);
-                            changedCount = true;
+                    if (status.getValue() instanceof String) {
+                        String value = status.getValue(String.class);
+                        boolean changedCount = false;
+                        for (UserReport report : userReportList) {
+                            if (report.getReportType().equals(value)) {
+                                int curCount = report.getNumberOfReports();
+                                curCount++;
+                                report.setNumberOfReports(curCount);
+                                changedCount = true;
+                            }
                         }
+                        if (!changedCount) {
+                            userReportList.add(new UserReport((String) status.getValue(), 1));
+                        }
+                        System.out.println("Status: " + value);
+                        userReportAdapter.notifyDataSetChanged();
                     }
-                    if (!changedCount) {
-                        userReportList.add(new UserReport((String) status.getValue(), 1));
-                    }
-                    System.out.println("Status: " + value);
-                    userReportAdapter.notifyDataSetChanged();
                 }
             }
 

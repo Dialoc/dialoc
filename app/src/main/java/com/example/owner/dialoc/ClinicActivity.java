@@ -257,21 +257,23 @@ public class ClinicActivity extends AppCompatActivity {
                 userReportList.clear();
                 Iterable<DataSnapshot> statuses = dataSnapshot.getChildren();
                 for (DataSnapshot status : statuses) {
-                    String value = (String) status.getValue();
-                    boolean changedCount = false;
-                    for (UserReport report : userReportList) {
-                        if (report.getReportType().equals(value)) {
-                            int curCount = report.getNumberOfReports();
-                            curCount++;
-                            report.setNumberOfReports(curCount);
-                            changedCount = true;
+                    if (status.getValue() instanceof  String) {
+                        String value = (String) status.getValue();
+                        boolean changedCount = false;
+                        for (UserReport report : userReportList) {
+                            if (report.getReportType().equals(value)) {
+                                int curCount = report.getNumberOfReports();
+                                curCount++;
+                                report.setNumberOfReports(curCount);
+                                changedCount = true;
+                            }
                         }
+                        if (!changedCount) {
+                            userReportList.add(new UserReport((String) status.getValue(), 1));
+                        }
+                        System.out.println("Status: " + value);
+                        userReportAdapter.notifyDataSetChanged();
                     }
-                    if (!changedCount) {
-                        userReportList.add(new UserReport((String) status.getValue(), 1));
-                    }
-                    System.out.println("Status: " + value);
-                    userReportAdapter.notifyDataSetChanged();
                 }
             }
 
