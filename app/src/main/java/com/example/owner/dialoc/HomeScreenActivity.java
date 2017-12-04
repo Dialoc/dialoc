@@ -243,9 +243,6 @@ public class HomeScreenActivity extends AppCompatActivity {
 
                 if (item.getItemId() == R.id.nav_home) {
 
-                } else if (item.getItemId() == R.id.nav_faq) {
-                    FragmentTransaction fragmentTransaction = mFragmentManager.beginTransaction();
-                    fragmentTransaction.replace(R.id.containerView, new TabFragment()).commit();
                 } else if (item.getItemId() == R.id.nav_favorites) {
                     Intent favoritesScreen = new Intent(HomeScreenActivity.this, FavoritesActivity.class);
                     startActivity(favoritesScreen);
