@@ -225,7 +225,10 @@ public class ClinicFragment extends Fragment {
                 @Override
                 public void onDataChange(DataSnapshot dataSnapshot) {
                     if (dataSnapshot.getValue() != null) {
-                        int count = dataSnapshot.child("count").getValue(int.class);
+                        int count  = 0;
+                        for (DataSnapshot snaps : dataSnapshot.getChildren()) {
+                            count++;
+                        }
                         if (count >= 1) {
                             Intent intent = new Intent(getContext(), ClinicActivity.class);
                             intent.putExtra("PLACE_ID", getArguments().getString("place-id"));
