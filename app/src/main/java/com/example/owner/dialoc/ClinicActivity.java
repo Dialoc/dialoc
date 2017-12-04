@@ -1,8 +1,20 @@
 package com.example.owner.dialoc;
 
+import android.app.Notification;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
+import android.content.Context;
 import android.content.Intent;
+import android.graphics.Color;
+import android.graphics.PorterDuff;
+import android.graphics.drawable.Drawable;
+import android.media.RingtoneManager;
+import android.net.LinkAddress;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
+import android.support.annotation.RequiresApi;
+import android.support.design.widget.Snackbar;
 import android.support.design.widget.TabLayout;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
@@ -72,6 +84,8 @@ public class ClinicActivity extends AppCompatActivity {
     private LinearLayout phoneLayout;
     private LinearLayout web_layout;
     private LinearLayout reportButton;
+    private LinearLayout favoriteButton;
+    private ImageView favorite;
     private Intent shareIntent;
 
     private DatabaseReference mDatabase;
@@ -114,6 +128,8 @@ public class ClinicActivity extends AppCompatActivity {
         reportButton = findViewById(R.id.report_button);
 
         mDatabase = FirebaseDatabase.getInstance().getReference();
+        favoriteButton = findViewById(R.id.favorite_button);
+        favorite = findViewById(R.id.home_favorites);
 
         Bundle extras = getIntent().getExtras();
         if (extras != null) {
@@ -172,6 +188,61 @@ public class ClinicActivity extends AppCompatActivity {
 
         final FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
 
+        if (user != null) {
+            DatabaseReference mDatabase = FirebaseDatabase.getInstance().getReference();
+            DatabaseReference ref = mDatabase.child("/users/" + user.getUid() + "/favorites/" + placeID);
+            ref.addListenerForSingleValueEvent(new ValueEventListener() {
+                @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
+                @Override
+                public void onDataChange(DataSnapshot dataSnapshot) {
+                    if (dataSnapshot.getValue() != null) {
+                        Drawable d = getDrawable(R.drawable.ic_favorite_black_24dp);
+                        favorite.setImageDrawable(d);
+                    }
+                }
+
+                @Override
+                public void onCancelled(DatabaseError databaseError) {
+                    System.out.println("The read failed: " + databaseError.getCode());
+                }
+            });
+        }
+        favoriteButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View button) {
+                FirebaseAuth mAuth = FirebaseAuth.getInstance();
+                FirebaseUser currentUser = mAuth.getCurrentUser();
+                if (currentUser != null) {
+                    DatabaseReference mDatabase = FirebaseDatabase.getInstance().getReference();
+                    final DatabaseReference ref = mDatabase.child("/users/" + currentUser.getUid() + "/favorites/" + placeID);
+                    ref.addListenerForSingleValueEvent(new ValueEventListener() {
+                        @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
+                        @Override
+                        public void onDataChange(DataSnapshot dataSnapshot) {
+                            if (dataSnapshot.getValue() == null) {
+                                Drawable d = getDrawable(R.drawable.ic_favorite_black_24dp);
+                                d.setColorFilter(Color.RED, PorterDuff.Mode.SRC_ATOP);
+                                favorite.setImageDrawable(d);
+                                ref.setValue(true);
+                            } else {
+                                Drawable d = getDrawable(R.drawable.ic_favorite_border_black_24dp);
+                                favorite.setImageDrawable(d);
+                                ref.removeValue();
+                            }
+                        }
+
+                        @Override
+                        public void onCancelled(DatabaseError databaseError) {
+                            System.out.println("The read failed: " + databaseError.getCode());
+                        }
+                    });
+                } else {
+                    Snackbar mySnackbar = Snackbar.make(view, "Log in required!", Snackbar.LENGTH_SHORT);
+                    mySnackbar.show();
+                }
+
+            }
+        });
         reportButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
