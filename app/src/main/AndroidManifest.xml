@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-package="com.example.owner.dialoc">
+    package="com.example.owner.dialoc">
 
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
@@ -21,21 +21,24 @@ package="com.example.owner.dialoc">
         </activity>
         <activity
             android:name=".HomeScreenActivity"
-            android:theme="@style/AppTheme.NoActionBar"
-            android:parentActivityName=".LoginScreen" />
+            android:parentActivityName=".LoginScreen"
+            android:theme="@style/AppTheme.NoActionBar" />
+
         <meta-data
             android:name="com.google.android.geo.API_KEY"
             android:value="@string/google_api_key" />
 
-
-    <activity android:name=".RegisterActivity"/>
-    <activity android:name=".UserProfileScreen"
-        android:parentActivityName=".HomeScreenActivity"/>
-        <activity android:name=".SearchClinics"
-            android:parentActivityName=".HomeScreenActivity"/>
-        <activity android:name=".ClinicActivity"
-            android:parentActivityName=".SearchClinics"/>
-
+        <activity android:name=".RegisterActivity" />
+        <activity
+            android:name=".UserProfileScreen"
+            android:parentActivityName=".HomeScreenActivity" />
+        <activity
+            android:name=".SearchClinics"
+            android:parentActivityName=".HomeScreenActivity" />
+        <activity
+            android:name=".ClinicActivity"
+            android:parentActivityName=".SearchClinics" />
+        <activity android:name=".FavoritesActivity"></activity>
     </application>
 
 </manifest>
