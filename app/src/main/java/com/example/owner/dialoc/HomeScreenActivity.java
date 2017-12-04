@@ -250,9 +250,6 @@ public class HomeScreenActivity extends AppCompatActivity {
                 } else if (item.getItemId() == R.id.nav_search) {
                     Intent searchScreen = new Intent(HomeScreenActivity.this, SearchClinics.class);
                     startActivity(searchScreen);
-                } else if (item.getItemId() == R.id.nav_notifications) {
-                    FragmentTransaction fragmentTransaction = mFragmentManager.beginTransaction();
-                    fragmentTransaction.replace(R.id.containerView, new TabFragment()).commit();
                 } else if (item.getItemId() == R.id.profile) {
                     Intent intent = new Intent(HomeScreenActivity.this, UserProfileScreen.class);
                     startActivity(intent);
