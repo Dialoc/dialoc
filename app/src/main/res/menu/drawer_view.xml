@@ -5,10 +5,6 @@
         android:title="Home"
         android:icon="@drawable/ic_home_black_24dp"/>
     <item
-        android:id="@+id/nav_faq"
-        android:title="Frequently Asked Questions"
-        android:icon="@drawable/ic_question_answer_black_24dp"/>
-    <item
         android:id="@+id/nav_favorites"
         android:title="Favorites"
         android:icon="@drawable/ic_favorite_black_24dp"/>
