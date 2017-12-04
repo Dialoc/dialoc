@@ -166,7 +166,7 @@
                     android:layout_marginTop="@dimen/clinic_detail_offset_top"
                     android:paddingRight="5dp"
                     android:paddingLeft="@dimen/clinic_detail_offset_left"
-                    android:text="@string/large_text"/>
+                    android:text=""/>
                 <LinearLayout
                     android:layout_marginTop="@dimen/clinic_detail_offset_top"
                     android:layout_width="match_parent"
