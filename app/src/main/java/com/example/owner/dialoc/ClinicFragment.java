@@ -265,7 +265,6 @@ public class ClinicFragment extends Fragment {
                         @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
                         @Override
                         public void onDataChange(DataSnapshot dataSnapshot) {
-                            Log.d(TAG, "made it here");
                             if (dataSnapshot.getValue() == null) {
                                 Drawable d = getContext().getDrawable(R.drawable.ic_favorite_black_24dp);
                                 d.setColorFilter(Color.RED, PorterDuff.Mode.SRC_ATOP);

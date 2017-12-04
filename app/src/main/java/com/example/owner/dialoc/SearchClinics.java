@@ -129,6 +129,9 @@ public class SearchClinics extends AppCompatActivity {
                 // TODO: Handle the error.
             }
             return true;
+        } else if (id == android.R.id.home) {
+            finish();
+            return true;
         }
 
         return super.onOptionsItemSelected(item);
