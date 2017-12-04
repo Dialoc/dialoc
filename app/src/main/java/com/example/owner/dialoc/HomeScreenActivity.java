@@ -29,6 +29,7 @@ import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -131,6 +132,21 @@ public class HomeScreenActivity extends AppCompatActivity {
         if (currentUser != null) {
             userId = currentUser.getUid();
             mDatabase = FirebaseDatabase.getInstance().getReference();
+
+            DatabaseReference ref = mDatabase.child("/users/" + userId + "/first-last-name");
+            ref.addListenerForSingleValueEvent(new ValueEventListener() {
+                @Override
+                public void onDataChange(DataSnapshot dataSnapshot) {
+                    View header= mNavigationView.getHeaderView(0);
+                    TextView nameText = header.findViewById(R.id.nav_header_name);
+                    nameText.setText(dataSnapshot.getValue(String.class));
+                }
+
+                @Override
+                public void onCancelled(DatabaseError databaseError) {
+
+                }
+            });
 
         }
         System.out.println("Home place id: " + homePlaceId);
