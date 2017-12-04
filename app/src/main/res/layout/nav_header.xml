@@ -21,7 +21,7 @@
         android:layout_height="wrap_content"
         android:id="@+id/nav_header_name"
         android:layout_centerVertical="true"
-        android:text="Rahul Raina"
+        android:text="Guest"
         android:textSize="20dp"
         android:layout_toRightOf="@+id/nav_header_image"
         android:layout_marginLeft="20dp"

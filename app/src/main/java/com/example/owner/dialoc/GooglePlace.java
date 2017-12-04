@@ -1,5 +1,7 @@
 package com.example.owner.dialoc;
 
+import android.app.Application;
+import android.content.res.Resources;
 import android.support.annotation.NonNull;
 import android.util.Log;
 
@@ -95,7 +97,7 @@ public class GooglePlace implements Comparable<GooglePlace> {
             } else {
                 photoRefs = new String[1];
             }
-            photoRefs[photoRefs.length - 1] = "http://i.imgur.com/DvpvklR.png";
+
             place.setPhotoArray(photoRefs);
             if (obj.get("opening_hours") != null) {
                 JsonArray hours = obj.get("opening_hours").getAsJsonObject().get("weekday_text").getAsJsonArray();
@@ -113,6 +115,8 @@ public class GooglePlace implements Comparable<GooglePlace> {
                 place.setLat(locObj.get("lat").getAsDouble());
                 place.setLng(locObj.get("lng").getAsDouble());
             }
+            photoRefs[photoRefs.length - 1] = "https://maps.googleapis.com/maps/api/streetview?size=400x400&"
+                    + "location="+place.getLat()+","+place.getLng()+"&key=" + MyApplication.instance.getResources().getString(R.string.google_api_key);
             return place;
         }
     }

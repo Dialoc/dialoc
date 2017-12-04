@@ -11,6 +11,7 @@
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
         android:supportsRtl="true"
+        android:name=".MyApplication"
         android:theme="@style/AppTheme">
         <activity android:name=".LoginScreen">
             <intent-filter>
@@ -38,7 +39,16 @@
         <activity
             android:name=".ClinicActivity"
             android:parentActivityName=".SearchClinics" />
-        <activity android:name=".FavoritesActivity"></activity>
+        <activity android:name=".FavoritesActivity" />
+        <activity
+            android:name=".PanoramaActivity"
+            android:label="@string/title_activity_panorama"
+            android:parentActivityName=".HomeScreenActivity"
+            android:theme="@style/AppTheme">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.example.owner.dialoc.HomeScreenActivity" />
+        </activity>
     </application>
 
 </manifest>
