@@ -130,8 +130,8 @@ public class ClinicFragment extends Fragment {
 
         // Inflate fragment and assign views
         view = inflater.inflate(R.layout.clinic_fragment, container, false);
-        dialysisClinicPhoneNumber =  view.findViewById(R.id.dialysis_clinic_phone_number);
-        dialysisClinicAddress =  view.findViewById(R.id.dialysis_clinic_address);
+        dialysisClinicPhoneNumber = view.findViewById(R.id.dialysis_clinic_phone_number);
+        dialysisClinicAddress = view.findViewById(R.id.dialysis_clinic_address);
         dialysisClinicHours = view.findViewById(R.id.open_hours);
         dialysisCinicUrl = view.findViewById(R.id.website_url);
         shareButton = view.findViewById(R.id.share_button);
@@ -219,7 +219,7 @@ public class ClinicFragment extends Fragment {
             });
 
 
-            ref = mDatabase.child("/clinics/"+ getArguments().getString("place-id") + "/status");
+            ref = mDatabase.child("/clinics/" + getArguments().getString("place-id") + "/status");
             ref.addValueEventListener(new ValueEventListener() {
                 @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN)
                 @Override
@@ -229,20 +229,22 @@ public class ClinicFragment extends Fragment {
                         if (count >= 1) {
                             Intent intent = new Intent(getContext(), ClinicActivity.class);
                             intent.putExtra("PLACE_ID", getArguments().getString("place-id"));
-                            PendingIntent pendingIntent = PendingIntent.getActivity(getContext(), 1, intent, PendingIntent.FLAG_ONE_SHOT);
-                            Uri defaultSoundUri= RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
-                            Notification.Builder builder = new Notification.Builder(getContext());
-                            builder.setContentTitle("Closure Alert");
-                            builder.setContentText(clinic.getName() + " may be closed. Tap for more info");
-                            builder.setContentIntent(pendingIntent);
-                            builder.setSmallIcon(R.drawable.ic_notifications_black_24dp);
-                            builder.setAutoCancel(true);
-                            builder.setPriority(Notification.PRIORITY_HIGH);
-                            builder.setSound(defaultSoundUri);
-                            Notification notification = builder.build();
-                            NotificationManager notificationManger =
-                                    (NotificationManager) getActivity().getSystemService(Context.NOTIFICATION_SERVICE);
-                            notificationManger.notify(1, notification);
+                            if (clinic != null) {
+                                PendingIntent pendingIntent = PendingIntent.getActivity(getContext(), 1, intent, PendingIntent.FLAG_ONE_SHOT);
+                                Uri defaultSoundUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
+                                Notification.Builder builder = new Notification.Builder(getContext());
+                                builder.setContentTitle("Closure Alert");
+                                builder.setContentText(clinic.getName() + " may be closed. Tap for more info");
+                                builder.setContentIntent(pendingIntent);
+                                builder.setSmallIcon(R.drawable.ic_notifications_black_24dp);
+                                builder.setAutoCancel(true);
+                                builder.setPriority(Notification.PRIORITY_HIGH);
+                                builder.setSound(defaultSoundUri);
+                                Notification notification = builder.build();
+                                NotificationManager notificationManger =
+                                        (NotificationManager) getActivity().getSystemService(Context.NOTIFICATION_SERVICE);
+                                notificationManger.notify(1, notification);
+                            }
                         }
                     }
                 }
@@ -298,7 +300,7 @@ public class ClinicFragment extends Fragment {
                 menu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
                     @Override
                     public boolean onMenuItemClick(MenuItem menuItem) {
-                        switch(menuItem.getItemId()) {
+                        switch (menuItem.getItemId()) {
                             case R.id.open_status:
                                 mDatabase.child("/clinics/" + curPlaceId + "/status/" + user.getUid()).setValue(menuItem.getTitle());
                                 Toast.makeText(getActivity(), "Open", Toast.LENGTH_SHORT).show();
@@ -343,6 +345,11 @@ public class ClinicFragment extends Fragment {
         // Set toolbar
 
         setClinic();
+        if (getArguments().getBoolean("homeBool")) {
+            getHomeClinic();
+        } else {
+            getBackupClinic();
+        }
         getUserReports();
         return view;
     }
@@ -399,9 +406,47 @@ public class ClinicFragment extends Fragment {
         });
     }
 
+    public void getHomeClinic() {
+        DatabaseReference ref = mDatabase.child("/users/" + user.getUid() + "/home-clinic");
+        ref.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                String homeClinic = dataSnapshot.getValue(String.class);
+                System.out.println("Home Clinic ID: " + homeClinic);
+                curPlaceId =  homeClinic;
+                setClinic();
+                System.out.println("");
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+                System.out.println("The read failed: " + databaseError.getCode());
+                curPlaceId = "";
+            }
+        });
+    }
+
+    public void getBackupClinic() {
+        DatabaseReference ref = mDatabase.child("/users/" + user.getUid() + "/backup-clinic");
+        ref.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                String backupClinic = dataSnapshot.getValue(String.class);
+                System.out.println("Backup Clinic ID: " + backupClinic);
+                curPlaceId =  backupClinic;
+                setClinic();
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+                System.out.println("The read failed: " + databaseError.getCode());
+                curPlaceId = "";
+            }
+        });
+    }
 
     void setClinic() {
-        String placeId = getArguments().getString("place-id");
+        String placeId = curPlaceId;
         Call<ResponseBody> call = googlePlaceAPI.getDetails(placeId, getString(R.string.google_api_key));
         call.enqueue(new Callback<ResponseBody>() {
             @Override

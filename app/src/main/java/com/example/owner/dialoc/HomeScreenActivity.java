@@ -131,23 +131,23 @@ public class HomeScreenActivity extends AppCompatActivity {
         if (currentUser != null) {
             userId = currentUser.getUid();
             mDatabase = FirebaseDatabase.getInstance().getReference();
-            getHomeClinic();
-            getBackupClinic();
-        }
 
+        }
+        System.out.println("Home place id: " + homePlaceId);
         if (homePlaceId.equals("")) {
             homePlaceId = "ChIJ5btcA5AE9YgRFAYcKNHxumU";
         }
         if (backupPlaceId.equals("")) {
             backupPlaceId = "ChIJBfUi1W8E9YgR8OaV1LSrqLs";
         }
-
+        System.out.println("Home place id: " + homePlaceId);
         mFragmentManager = getSupportFragmentManager();
         mFragmentManager.executePendingTransactions();
         if (savedInstanceState == null) {
             // create clinic_fragment fragments
             homeClinic = new ClinicFragment();
             Bundle homeBundle = new Bundle();
+            homeBundle.putBoolean("homeBool", true);
             homeBundle.putString("place-id", homePlaceId);
             homeClinic.setArguments(homeBundle);
 
@@ -173,6 +173,7 @@ public class HomeScreenActivity extends AppCompatActivity {
                 Fragment fragment = mFragmentManager.getFragments().get(i);
                 if (fragment instanceof ClinicFragment) {
                     String fragmentPlace = fragment.getArguments().getString("place-id");
+
                     if (fragmentPlace.equals(homePlaceId)) {
                         homeClinic = (ClinicFragment)fragment;
                     } else if (fragmentPlace.equals(backupPlaceId)) {

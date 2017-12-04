@@ -302,13 +302,13 @@ public class ClinicActivity extends AppCompatActivity {
     private void storeHomeClinic() {
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
         mDatabase = FirebaseDatabase.getInstance().getReference();
-        mDatabase.child("/users/" + user.getUid() + "/home-clinic").setValue("PLACE_ID");
+        mDatabase.child("/users/" + user.getUid() + "/home-clinic").setValue(placeID);
     }
 
     private void storeBackupClinic() {
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
         mDatabase = FirebaseDatabase.getInstance().getReference();
-        mDatabase.child("/users/" + user.getUid() + "/backup-clinic").setValue("PLACE_ID");
+        mDatabase.child("/users/" + user.getUid() + "/backup-clinic").setValue(placeID);
     }
 
     @Override
