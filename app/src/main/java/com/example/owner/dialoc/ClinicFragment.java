@@ -413,9 +413,12 @@ public class ClinicFragment extends Fragment {
             public void onDataChange(DataSnapshot dataSnapshot) {
                 String homeClinic = dataSnapshot.getValue(String.class);
                 System.out.println("Home Clinic ID: " + homeClinic);
-                curPlaceId =  homeClinic;
-                setClinic();
-                System.out.println("");
+                if (homeClinic != null) {
+                    curPlaceId =  homeClinic;
+                    setClinic();
+                    System.out.println("");
+                }
+
             }
 
             @Override
@@ -433,8 +436,11 @@ public class ClinicFragment extends Fragment {
             public void onDataChange(DataSnapshot dataSnapshot) {
                 String backupClinic = dataSnapshot.getValue(String.class);
                 System.out.println("Backup Clinic ID: " + backupClinic);
-                curPlaceId =  backupClinic;
-                setClinic();
+                if (backupClinic != null) {
+                    curPlaceId =  backupClinic;
+                    setClinic();
+                }
+
             }
 
             @Override
