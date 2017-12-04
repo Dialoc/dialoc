@@ -5,6 +5,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -27,6 +28,15 @@ public class UserProfileScreen extends AppCompatActivity {
     private DatabaseReference mDatabase;
     private String firstName;
     private String lastName;
+
+    private EditText nameField;
+    private EditText ageField;
+    private EditText heightField;
+    private EditText weightField;
+    private EditText addressField;
+    private EditText bioField;
+
+    private boolean editMode = false;
 
 
     @Override
@@ -51,6 +61,20 @@ public class UserProfileScreen extends AppCompatActivity {
             getUserProfileInformation();
         }
 
+        nameField = (EditText) (findViewById(R.id.user_profile_name));
+        ageField = (EditText) (findViewById(R.id.user_profile_age));
+        heightField = (EditText) (findViewById(R.id.user_profile_height));
+        weightField = (EditText) (findViewById(R.id.user_profile_weight));
+        addressField = (EditText) (findViewById(R.id.user_profile_home_address));
+        bioField = (EditText) (findViewById(R.id.user_profile_bio));
+
+        nameField.setEnabled(false);
+        ageField.setEnabled(false);
+        heightField.setEnabled(false);
+        weightField.setEnabled(false);
+        addressField.setEnabled(false);
+        bioField.setEnabled(false);
+
     }
 
     @Override
@@ -68,11 +92,48 @@ public class UserProfileScreen extends AppCompatActivity {
 
         //noinspection SimplifiableIfStatement
         if (id == R.id.user_profile_edit) {
-            Toast.makeText(UserProfileScreen.this, "Action clicked", Toast.LENGTH_LONG).show();
+
+            if (!editMode) {
+                Toast.makeText(UserProfileScreen.this, "Entering Edit Mode", Toast.LENGTH_LONG).show();
+
+                nameField.setEnabled(true);
+                ageField.setEnabled(true);
+                heightField.setEnabled(true);
+                weightField.setEnabled(true);
+                addressField.setEnabled(true);
+                bioField.setEnabled(true);
+                editMode = true;
+            } else {
+                Toast.makeText(UserProfileScreen.this, "Edits Saved", Toast.LENGTH_LONG).show();
+
+                nameField.setEnabled(false);
+                ageField.setEnabled(false);
+                heightField.setEnabled(false);
+                weightField.setEnabled(false);
+                addressField.setEnabled(false);
+                bioField.setEnabled(false);
+                editMode = false;
+                storeUserInfo();
+            }
+
             return true;
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    private void storeUserInfo() {
+        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+        mDatabase = FirebaseDatabase.getInstance().getReference();
+        String name = nameField.getText().toString();
+        String[] names = name.split(" ");
+
+        mDatabase.child("/users/" + user.getUid() + "/first-name").setValue(names[0]);
+        mDatabase.child("/users/" + user.getUid() + "/last-name").setValue(names[1]);
+        mDatabase.child("/users/" + user.getUid() + "/first-last-name").setValue(name);
+        mDatabase.child("/users/" + user.getUid() + "/age").setValue(ageField.getText().toString());
+        mDatabase.child("/users/" + user.getUid() + "/height").setValue(heightField.getText().toString());
+        mDatabase.child("/users/" + user.getUid() + "/weight").setValue(weightField.getText().toString());
     }
 
     public void getUserProfileInformation() {
@@ -109,7 +170,7 @@ public class UserProfileScreen extends AppCompatActivity {
             public void onDataChange(DataSnapshot dataSnapshot) {
                 String age = dataSnapshot.getValue(String.class);
                 System.out.println("User Age: " + age);
-                String ageText = "Age: " + age;
+                String ageText = age;
                 TextView userProfileAge = (TextView) findViewById(R.id.user_profile_age);
                 userProfileAge.setText(ageText);
             }
@@ -128,7 +189,7 @@ public class UserProfileScreen extends AppCompatActivity {
             public void onDataChange(DataSnapshot dataSnapshot) {
                 String height = dataSnapshot.getValue(String.class);
                 System.out.println("User Height: " + height);
-                String heightText = "Height: " + height + "\"";
+                String heightText = height + "\"";
                 TextView userProfileAge = (TextView) findViewById(R.id.user_profile_height);
                 userProfileAge.setText(heightText);
             }
@@ -147,7 +208,7 @@ public class UserProfileScreen extends AppCompatActivity {
             public void onDataChange(DataSnapshot dataSnapshot) {
                 String weight = dataSnapshot.getValue(String.class);
                 System.out.println("User Weight: " + weight);
-                String weightText = "Weight: " + weight + " lbs";
+                String weightText = weight;
                 TextView userProfileAge = (TextView) findViewById(R.id.user_profile_weight);
                 userProfileAge.setText(weightText);
             }

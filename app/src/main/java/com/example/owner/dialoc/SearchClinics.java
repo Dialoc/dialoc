@@ -29,6 +29,8 @@ import com.google.android.gms.location.places.ui.PlaceAutocompleteFragment;
 import com.google.android.gms.location.places.ui.PlaceSelectionListener;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonParser;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -37,6 +39,7 @@ import org.json.JSONObject;
 import java.net.URI;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.List;
 
 import okhttp3.ResponseBody;
 import retrofit2.Call;
@@ -136,9 +139,7 @@ public class SearchClinics extends AppCompatActivity {
         if (requestCode == PLACE_AUTOCOMPLETE_REQUEST_CODE) {
             if (resultCode == RESULT_OK) {
                 Place place = PlaceAutocomplete.getPlace(this, data);
-                Intent intent = new Intent(this, ClinicActivity.class);
-                intent.putExtra("PLACE_ID", place.getId());
-                startActivity(intent);
+                getNearbyClinics(place);
 
             } else if (resultCode == PlaceAutocomplete.RESULT_ERROR) {
                 Status status = PlaceAutocomplete.getStatus(this, data);
@@ -151,64 +152,62 @@ public class SearchClinics extends AppCompatActivity {
         }
     }
 
-    public void getClinicsNearPlace(Place place) {
-        String url = "https://maps.googleapis.com/maps/api/place/nearbysearch/json?location="
-                + place.getLatLng().latitude + ","
-                + place.getLatLng().longitude
-                + "&rankby=distance&keyword=dialysis&key="
-                + getString(R.string.google_api_key);
-
-        JsonObjectRequest obj = new JsonObjectRequest(Request.Method.GET, url, null, new Response.Listener<JSONObject>() {
+    public void getNearbyClinics(Place place) {
+        final ArrayList<String> nearbyPlaces = new ArrayList<>();
+        final StringBuilder sb = new StringBuilder();
+        Call<ResponseBody> call = googlePlaceAPI.getNearbyClinics(
+                place.getLatLng().latitude + "," + place.getLatLng().longitude,
+                "distance", "dialysis", getString(R.string.google_api_key));
+        call.enqueue(new Callback<ResponseBody>() {
             @Override
-            public void onResponse(JSONObject response) {
-                System.out.println("Response: " + response.toString());
-                try {
-                    JSONArray jsonArray = response.getJSONArray("results");
-                    System.out.println("Full Results: " + jsonArray);
-                    getPlacesInfo(jsonArray);
-
-                } catch (JSONException e) {
-                    e.printStackTrace();
+            public void onResponse(Call<ResponseBody> call,
+                                   retrofit2.Response<ResponseBody> response) {
+                Log.d("HTTP Response", response.toString());
+                if (response.isSuccessful()) {
+                    JsonParser parser = new JsonParser();
+                    JsonArray places = parser.parse(response.body().charStream()).getAsJsonObject().get("results").getAsJsonArray();
+                    for (int i = 0; i < places.size(); i++) {
+                        GooglePlace googlePlace = gson.fromJson(places.get(i), GooglePlace.class);
+                        searchPlacesList.add(googlePlace);
+                        sb.append(googlePlace.getLat() + "," + googlePlace.getLng() + "|");
+                    }
+                    sb.deleteCharAt(sb.length() - 1);
+                    getDistances(searchPlacesList, sb.toString());
                 }
             }
-        }, new Response.ErrorListener() {
-
             @Override
-            public void onErrorResponse(VolleyError error) {
-                System.out.println("Error: " + error.toString());
+            public void onFailure(Call<ResponseBody> call, Throwable t) {
+                Log.e("HTTP Request", t.getMessage());
             }
         });
-        queue.add(obj);
     }
 
-    public void getPlacesInfo(JSONArray placesArray) throws JSONException {
-        searchPlacesList.clear();
-        for (int i=0; i < placesArray.length(); i++) {
-            final JSONObject currentPlace = placesArray.getJSONObject(i);
-//            searchPlacesList.add(new SearchPlace((String) currentPlace.get("name"), (String) currentPlace.get("vicinity"), (String) currentPlace.get("place_id"), (String) currentPlace.get("icon")));
-
-
-            Call<ResponseBody> call = googlePlaceAPI.getDetails((String) currentPlace.get("place_id"), getString(R.string.google_api_key));
-            call.enqueue(new Callback<ResponseBody>() {
-                @Override
-                public void onResponse(Call<ResponseBody> call,
-                                       retrofit2.Response<ResponseBody> response) {
-                    Log.d("HTTP Response", response.toString());
-                    if (response.isSuccessful()) {
-                        GooglePlace curClinic = gson.fromJson(response.body().charStream(), GooglePlace.class);
-                        searchPlacesList.add(curClinic);
-                        searchPlaceAdapter.notifyDataSetChanged();
+    public void getDistances(final List<GooglePlace> places, String destinations) {
+        Call<ResponseBody> call = googlePlaceAPI.getDistances("imperial", "33.7490,-84.3880",
+                destinations, getString(R.string.google_api_key));
+        call.enqueue(new Callback<ResponseBody>() {
+            @Override
+            public void onResponse(Call<ResponseBody> call,
+                                   retrofit2.Response<ResponseBody> response) {
+                Log.d("HTTP Response", response.toString());
+                if (response.isSuccessful()) {
+                    JsonParser parser = new JsonParser();
+                    JsonArray distances = parser.parse(response.body().charStream()).getAsJsonObject()
+                            .get("rows").getAsJsonArray().get(0).getAsJsonObject().get("elements")
+                            .getAsJsonArray();
+                    for (int i = 0; i < distances.size(); i++) {
+                        places.get(i).setDistance(distances.get(i).getAsJsonObject().get("distance")
+                                .getAsJsonObject().get("text").getAsString());
                     }
+                    searchPlaceAdapter.notifyDataSetChanged();
                 }
-                @Override
-                public void onFailure(Call<ResponseBody> call, Throwable t) {
-                    Log.e("HTTP Request", t.getMessage());
-                }
-            });
-
-        }
-
-        TextView searchText = (TextView) findViewById(R.id.search_place_text);
+            }
+            @Override
+            public void onFailure(Call<ResponseBody> call, Throwable t) {
+                Log.e("HTTP Request", t.getMessage());
+            }
+        });
+        TextView searchText = findViewById(R.id.search_place_text);
         if (searchPlacesList.size() >= 0) {
             searchText.setVisibility(View.GONE);
         } else {
@@ -216,4 +215,5 @@ public class SearchClinics extends AppCompatActivity {
         }
 
     }
+
 }
