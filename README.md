@@ -33,8 +33,8 @@ their normal operation.
 
 ### Prerequisites
 
-To run Dialoc, you must have an Android device and you must allow your phone to download
-applications outside of the Google Play Store. You can do this by following these steps:
+To run Dialoc, you must have an Android device that is 4.0.4 or above. You must allow your phone to
+download applications outside of the Google Play Store. You can do this by following these steps:
 
     - Open "Settings"
     - Select "Lock screen and security"
@@ -44,7 +44,8 @@ This will allow you to run our application through our APK link.
 
 ### Dependencies
 
-No dependencies required. Just an Android device is necessary.
+No dependencies required. All that is necessary is an Android device that is at or above
+version 4.0.4, and allowing applications to be downloaded from a unknown source.
 
 ### Download Instructions
 
