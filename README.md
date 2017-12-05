@@ -45,7 +45,7 @@ This will allow you to run our application through our APK link.
 ### Dependencies
 
 No dependencies required. All that is necessary is an Android device that is at or above
-version 4.0.4, and allowing applications to be downloaded from a unknown source.
+version 4.0.4, and to allow applications to be downloaded from a unknown source.
 
 ### Download Instructions
 
