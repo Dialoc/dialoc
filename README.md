@@ -33,21 +33,29 @@ their normal operation.
 
 ### Prerequisites
 
-What things you need to install the software and how to install them
+To run Dialoc, you must have an Android device and you must enable developer options. To do this you
+must follow these steps:
 
-```
-Give examples
-```
+    - Open Settings
+    - Select About Device
+    - Find the area that says Build number and tap it 7 times
+
+This will allow you to run our application through our APK link.
 
 ### Dependencies
 
-### Download
+### Download Instructions
+
+
 
 ### Build Instructions (If Needed)
 
 ### Installation of Application
 
 ### Run Instructions
+
+Once Dialoc has finished downloading, locate the application on your phone and tap it,
+just as you would with any other application.
 
 ### Troubleshooting
 
