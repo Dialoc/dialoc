@@ -33,24 +33,34 @@ their normal operation.
 
 ### Prerequisites
 
-To run Dialoc, you must have an Android device and you must enable developer options. To do this you
-must follow these steps:
+To run Dialoc, you must have an Android device and you must allow your phone to download
+applications outside of the Google Play Store. You can do this by following these steps:
 
-    - Open Settings
-    - Select About Device
-    - Find the area that says Build number and tap it 7 times
+    - Open "Settings"
+    - Select "Lock screen and security"
+    - Set the switch labelled "Unknown sources" to allow installation of apps from unknown sources
 
 This will allow you to run our application through our APK link.
 
 ### Dependencies
 
+No dependencies required. Just an Android device is necessary.
+
 ### Download Instructions
 
+From your Android device, enter this link on to your web browser:
 
+https://is.gd/y9p9gz
 
-### Build Instructions (If Needed)
+The APK should immediately begin downloading.
 
 ### Installation of Application
+
+Once the download is finished, select the APK file you just downloaded and you'll be prompted with a
+message asking if you would like to install this application. Select install and wait. Once it has
+completed its installation, select "Open" and Dialoc will open. You will also be able to find and
+run Dialoc in the same way you would run any application on your phone. Just search Dialoc in the
+list of all your applications.
 
 ### Run Instructions
 
@@ -59,3 +69,5 @@ just as you would with any other application.
 
 ### Troubleshooting
 
+If the APK is not downloading, make sure you have allowed your phone to download applications from
+unknown sources. You can find the steps for this in the "Prerequisites" section above
